@@ -16,11 +16,12 @@ const WeaponSchema = new Schema(
     class: {
       type: String,
       required: true,
-      enum: ['simple', 'ranged', 'non-simple'],
+      enum: ['simple', 'martial', 'non-simple'],
     },
     distance: {
       type: String,
       required: false,
+      enum: ['melee', 'ranged']
     },
     damageDice: {
       type: String,
@@ -30,7 +31,7 @@ const WeaponSchema = new Schema(
     damageType: {
       type: String,
       required: true,
-      enum: ['bludgeoning', 'piercing', 'slashing'],
+      enum: ['bludgeoning', 'piercing', 'slashing', 'none'],
     },
     weightLb: {
       type: Number,

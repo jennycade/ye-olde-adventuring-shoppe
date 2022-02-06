@@ -18,7 +18,7 @@ const ArmorSchema = new Schema({
     required: true,
     enum: ['small', 'medium'],
   },
-  cost: {
+  costGp: {
     type: Number,
     required: true,
   },
