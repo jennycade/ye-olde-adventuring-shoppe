@@ -16,7 +16,7 @@ const WeaponSchema = new Schema(
     class: {
       type: String,
       required: true,
-      enum: ['simple', 'ranged'],
+      enum: ['simple', 'ranged', 'non-simple'],
     },
     distance: {
       type: String,
@@ -53,13 +53,21 @@ WeaponSchema.virtual('url').get(function() {
   return `inventory/weapon/${this._id}`;
 });
 
-// helper function
+// virtual for category
+WeaponSchema.virtual('category').get(function() {
+  if (this.class === 'non-simple') {
+    return this.distance;
+  } else {
+    return `${this.class} ${this.distance}`;
+  }
+});
+
+// damage
+// helper function for damage
 const parseDamage = (damageDice) => {
   const [numDice, dieType] = damageDice.split('d').map(x => parseInt(x));
   return [numDice, dieType];
 };
-
-// damage
 WeaponSchema.virtual('minDamage').get(function() {
   // min: roll 1 on each die = number of dice
   return parseDamage(this.damageDice)[0];
