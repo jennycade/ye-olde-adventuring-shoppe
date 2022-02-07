@@ -42,6 +42,7 @@ const WeaponSchema = new Schema(
       type: Schema.Types.ObjectID,
       ref: 'WeaponProperty'
     }],
+    rangeFt: String,
     special: String,
     image: {
       type: String,
