@@ -46,7 +46,7 @@ const ArmorSchema = new Schema({
 
 // url
 ArmorSchema.virtual('url').get(function() {
-  return `/inventory/armor/${this._id}`;
+  return `/armor/${this._id}`;
 });
 
 // donning and doffing time - based on armorType

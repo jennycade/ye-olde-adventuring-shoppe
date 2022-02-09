@@ -21,7 +21,7 @@ const ShopSchema = new Schema({
 
 // url
 ShopSchema.virtual('url').get(function() {
-  return `/shop/${this._id}`;
+  return `/shops/${this._id}`;
 });
 
 // number of items
