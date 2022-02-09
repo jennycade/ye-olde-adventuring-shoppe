@@ -48,7 +48,18 @@ exports.weaponDetail = async (req, res, next) => {
 // helpers
 // db entry -> form
 const convertDocToFormData = (weapon, weaponProperties) => {
-  const formData = {...weapon};
+  const formData = {
+    name: weapon.name,
+    costGp: weapon.costGp,
+    class: weapon.class,
+    distance: weapon.distance,
+    damageDice: weapon.damageDice,
+    damageType: weapon.damageType,
+    weightLb: weapon.weightLb,
+    rangeFt: weapon.rangeFt,
+    special: weapon.special,
+    image: weapon.image,
+  };
   const props = weaponProperties.map(prop => {
     return {
       _id: prop._id,

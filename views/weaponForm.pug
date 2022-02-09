@@ -3,16 +3,115 @@ extend layout
 block content 
   form(method='POST' action='/')
     label Name 
-      input(type='text'
-      value=weapon.name
-      required=true
-    )
+      input(
+        name='name'
+        type='text'
+        value=weapon.name
+        required=true
+        maxlength=100
+      )
+
+    label Cost (gp)
+      input(
+        name='costGp'
+        type='number'
+        required=true
+        value=weapon.costGp
+      )
+    
+    label Weapon class 
+      select(
+        name='class'
+        required
+      )
+        option(
+          value=''
+          disabled
+          selected=(weapon.class === undefined)
+        )
+        -
+          const classOptions = ['simple', 'martial', 'non-simple'];
+        for selectOption in classOptions 
+          option(
+            value=selectOption
+            selected=(weapon.class === selectOption)
+          ) #{selectOption}
+    
+    label Distance 
+      select(
+        name='distance'
+        required
+      )
+        option(
+          value=''
+          disabled
+          selected=(weapon.distance === undefined)
+        )
+        -
+          const distanceOptions = ['melee', 'ranged'];
+        for selectOption in distanceOptions 
+          option(
+            value=selectOption
+            selected=(weapon.distance === selectOption)
+          ) #{selectOption}
+    
+    label Range (for ranged/thrown weapons only)
+      input(
+        name='rangeFt'
+        type='number'
+        value=weapon.rangeFt
+      )
+    
+    label Damage Dice (format: #d#)
+      input(
+        name='damageDice'
+        type='text'
+        pattern="^\d+d\d+$"
+        placeholder='e.g. 1d8 or 2d10'
+        required
+      )
+    
+    label Damage type
+      select(
+        name='damageType'
+        required
+      )
+        option(
+          value=''
+          disabled
+          selected=(weapon.damageType === undefined)
+        )
+        -
+          const damageTypeOptions = ['bludgeoning', 'piercing', 'slashing', 'none'];
+        for selectOption in damageTypeOptions 
+          option(
+            value=selectOption
+            selected=(weapon.damageType === selectOption)
+          ) #{selectOption}
+    
+    label Weight (lb)
+      input(
+        name='weightLb'
+        type='number'
+        required
+        value=weapon.weightLb
+      )
 
     label Weapon Properties 
       each prop in weapon.properties 
         input(
+          name='properties'
           id=`prop${prop._id}`
           type='checkbox'
           checked=prop.checked
         )
         label(for=`prop${prop._id}`) #{prop.name}
+
+    label Special rules 
+      textarea(
+        name='special'
+      )
+    
+    input(
+      type='submit'
+    )
