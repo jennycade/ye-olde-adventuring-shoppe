@@ -26,6 +26,7 @@ exports.armorDetail = async (req, res, next) => {
     if (armor === null) {
       const err = new Error(`Armor not found`);
       err.status = 404;
+      return next(err);
     }
     res.render(
       'armorDetail',
