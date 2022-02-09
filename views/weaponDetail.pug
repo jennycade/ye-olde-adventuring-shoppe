@@ -1,0 +1,40 @@
+extends layout 
+
+block content 
+  h1= weapon.name 
+
+  if weapon.image 
+    img(src=weapon.image)
+
+  dl 
+    dt Cost 
+    dd #{weapon.costGp} gp
+
+    dt Weapon type 
+    dd #{weapon.category} weapon
+
+    dt Damage roll
+    dd #{weapon.damageDice} #{weapon.damageType}
+    dd Minimum damage: #{weapon.minDamage}
+    dd Mean damage: #{weapon.meanDamage}
+    dd Max damage: #{weapon.maxDamage}
+
+    dt Weight 
+    dd #{weapon.weight} lb 
+
+    dt Properties 
+    dd 
+      dl
+        each property in weapon.properties 
+          dt #{property.name}
+          dd #{property.description}
+        else 
+          dt No properties
+    
+    if weapon.rangeFt 
+      dt Range 
+      dd #{weapon.rangeFt} feet
+
+    if weapon.special 
+      dt Special rules 
+      dd #{weapon.special}

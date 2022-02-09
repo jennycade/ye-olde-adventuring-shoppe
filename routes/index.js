@@ -13,4 +13,6 @@ router.get('/', function(req, res, next) {
 // get weapons
 router.get('/weapons/', weaponController.weaponList);
 
+router.get('/weapons/:id', weaponController.weaponDetail);
+
 module.exports = router;

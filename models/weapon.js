@@ -52,7 +52,7 @@ const WeaponSchema = new Schema(
 
 // virtual for url
 WeaponSchema.virtual('url').get(function() {
-  return `inventory/weapon/${this._id}`;
+  return `/weapons/${this._id}`;
 });
 
 // virtual for category
