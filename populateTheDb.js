@@ -57,7 +57,7 @@ async function main() {
       // convert weapon property string to array of matching WeaponProperty ids
       if (row.properties !== '') {
         const props = row.properties.split(', ');
-        const properties = []
+        const properties = [];
         await props.forEach( async (prop) => {
           // find the WeaponProperty with matching name
           const weaponProperty = await WeaponProperty.findOne({name: prop}).exec();
@@ -67,6 +67,8 @@ async function main() {
           properties.push(weaponProperty);
         });
         obj.properties = properties;
+      } else {
+        obj.properties = [];
       }
       // strip whitespace from damageDice
       obj.damageDice = obj.damageDice.trim();
@@ -79,6 +81,13 @@ async function main() {
       console.log(`Error importing weapon: ${err}`);
     }
   }
+  const checkWeapon = async (row, importedWeaponNames) => {
+    // print weapon only if weapon isn't already in the database
+    if (!importedWeaponNames.includes(row.name)) {
+      console.log(`Re-importing weapon: ${row.name}`);
+      await createWeapon(row);
+    }
+  };
   
   // read CSV files
   // armor
@@ -103,6 +112,13 @@ async function main() {
     .pipe(csv.parse({ headers: true}))
     .on('error', error => console.error(error))
     .on('data', async (row) => { await createWeapon(row)})
+    .on('end', rowCount => console.log(`Parsed ${rowCount} rows`));
+  }
+  const checkAllWeapons = async (importedWeaponNames) => {
+    fs.createReadStream('./data/weapons.csv')
+    .pipe(csv.parse({ headers: true}))
+    .on('error', error => console.error(error))
+    .on('data', async (row) => { await checkWeapon(row, importedWeaponNames)})
     .on('end', rowCount => console.log(`Parsed ${rowCount} rows`));
   }
 
@@ -132,8 +148,7 @@ async function main() {
   // retrying weapons
   const importedWeapons = await Weapon.find({}, 'name');
   const importedWeaponNames = importedWeapons.map(obj => obj.name);
-  const unimportedWeapons = await Weapon.find({'name': {'$nin': importedWeaponNames}});
-  console.log(unimportedWeapons);
+  await checkAllWeapons(importedWeaponNames);
 
   // process.exit();
 }
