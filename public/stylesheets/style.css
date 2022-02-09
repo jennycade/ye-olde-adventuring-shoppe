@@ -1,8 +1,16 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+
+  display: grid;
+  grid-template-columns: 200px 1fr;
 }
 
 a {
   color: #00B7FF;
+}
+
+.sidebarNav {
+  display: flex;
+  flex-direction: column;
 }
