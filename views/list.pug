@@ -1,0 +1,11 @@
+extends layout 
+
+block content 
+  h1= title[0].toUpperCase() + title.substring(1)
+
+  ul
+    each item in items
+      li 
+        a(href=item.url) #{item.name}
+    else 
+      li No items

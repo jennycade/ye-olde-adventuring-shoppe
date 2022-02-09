@@ -1,0 +1,16 @@
+extends layout 
+
+block content 
+  h1= item.name 
+
+  if item.image 
+    img(src=item.image)
+  
+  dl 
+    dt Cost 
+    dd #{item.costGp} gp 
+
+    dt Weight 
+    dd #{item.weightLb} lb 
+
+    block itemDetails

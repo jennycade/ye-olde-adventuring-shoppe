@@ -9,10 +9,10 @@ exports.weaponList = async (req, res, next) => {
       .populate('properties')
       .exec();
     res.render(
-      'weaponList',
+      'list',
       {
         title: 'All weapons',
-        weapons,
+        items: weapons,
       }
     );
   } catch (err) {
@@ -33,10 +33,10 @@ exports.weaponDetail = async (req, res, next) => {
       return next(err);
     }
     res.render(
-      'weaponDetail.pug',
+      'weaponDetail',
       {
         title: weapon.name,
-        weapon,
+        item: weapon,
       }
     )
 

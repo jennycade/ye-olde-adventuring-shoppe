@@ -1,40 +1,29 @@
-extends layout 
+extends itemDetail 
 
-block content 
-  h1= weapon.name 
-
-  if weapon.image 
-    img(src=weapon.image)
-
-  dl 
-    dt Cost 
-    dd #{weapon.costGp} gp
+block itemDetails 
 
     dt Weapon type 
-    dd #{weapon.category} weapon
+    dd #{item.category} item
 
     dt Damage roll
-    dd #{weapon.damageDice} #{weapon.damageType}
-    dd Minimum damage: #{weapon.minDamage}
-    dd Mean damage: #{weapon.meanDamage}
-    dd Max damage: #{weapon.maxDamage}
-
-    dt Weight 
-    dd #{weapon.weight} lb 
+    dd #{item.damageDice} #{item.damageType}
+    dd Minimum damage: #{item.minDamage}
+    dd Mean damage: #{item.meanDamage}
+    dd Max damage: #{item.maxDamage}
 
     dt Properties 
     dd 
       dl
-        each property in weapon.properties 
+        each property in item.properties 
           dt #{property.name}
           dd #{property.description}
         else 
           dt No properties
     
-    if weapon.rangeFt 
+    if item.rangeFt 
       dt Range 
-      dd #{weapon.rangeFt} feet
+      dd #{item.rangeFt} feet
 
-    if weapon.special 
+    if item.special 
       dt Special rules 
-      dd #{weapon.special}
+      dd #{item.special}
