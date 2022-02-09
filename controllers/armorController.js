@@ -39,3 +39,19 @@ exports.armorDetail = async (req, res, next) => {
     return next(err);
   }
 }
+
+// get form to delete
+exports.updateGet = async(req, res, next) => {
+  res.render(
+    'layout',
+    { title: 'Update'}
+  );
+};
+
+// get form to delete
+exports.deleteGet = async(req, res, next) => {
+  res.render(
+    'layout',
+    { title: 'Delete'}
+  );
+};

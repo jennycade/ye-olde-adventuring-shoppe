@@ -1,0 +1,18 @@
+extend layout 
+
+block content 
+  form(method='POST' action='/')
+    label Name 
+      input(type='text'
+      value=weapon.name
+      required=true
+    )
+
+    label Weapon Properties 
+      each prop in weapon.properties 
+        input(
+          id=`prop${prop._id}`
+          type='checkbox'
+          checked=prop.checked
+        )
+        label(for=`prop${prop._id}`) #{prop.name}

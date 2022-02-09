@@ -44,3 +44,54 @@ exports.weaponDetail = async (req, res, next) => {
     return next(err);
   }
 }
+
+// helpers
+// db entry -> form
+const convertDocToFormData = (weapon, weaponProperties) => {
+  const formData = {...weapon};
+  const props = weaponProperties.map(prop => {
+    return {
+      _id: prop._id,
+      name: prop.name,
+      checked: weapon.properties.includes(prop._id)
+    }
+  });
+
+  formData.properties = props;
+  return formData;
+};
+
+// get form to update
+exports.updateGet = async (req, res, next) => {
+  try {
+    // get the data
+    const weapon = await Weapon.findById(req.params.id).exec();
+    if (weapon === null) {
+      const err = new Error(`Weapon not found`);
+      err.status = 404
+      return next(err);
+    }
+    const weaponProperties = await WeaponProperty.find().exec();
+
+    // make the form
+    const formData = convertDocToFormData(weapon, weaponProperties);
+    res.render(
+      'weaponForm',
+      {
+        title: `Update ${weapon.name}`,
+        weapon: formData
+      }
+    )
+
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// get form to delete
+exports.deleteGet = async(req, res, next) => {
+  res.render(
+    'layout',
+    { title: 'Delete'}
+  );
+};
