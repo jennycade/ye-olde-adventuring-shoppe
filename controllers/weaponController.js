@@ -82,7 +82,7 @@ exports.updateGet = async (req, res, next) => {
       err.status = 404
       return next(err);
     }
-    const weaponProperties = await WeaponProperty.find().exec();
+    const weaponProperties = await WeaponProperty.find().sort('name').exec();
 
     // make the form
     const formData = convertDocToFormData(weapon, weaponProperties);

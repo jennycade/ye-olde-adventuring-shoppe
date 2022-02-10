@@ -2,8 +2,10 @@ extend layout
 
 block content 
   form(method='POST' action='/')
-    label Name 
-      input(
+    .mb-3
+      label.form-label(for='name') Name 
+      input.form-control(
+        id='name'
         name='name'
         type='text'
         value=weapon.name
@@ -11,16 +13,20 @@ block content
         maxlength=100
       )
 
-    label Cost (gp)
-      input(
+    .mb-3
+      label.form-label(for='costGp') Cost (gp)
+      input.form-control(
+        id='costGp'
         name='costGp'
         type='number'
         required=true
         value=weapon.costGp
       )
-    
-    label Weapon class 
-      select(
+
+    .mb-3
+      label.form-label(for='class') Weapon class 
+      select.form-select(
+        id='class'
         name='class'
         required
       )
@@ -37,8 +43,10 @@ block content
             selected=(weapon.class === selectOption)
           ) #{selectOption}
     
-    label Distance 
-      select(
+    .mb-3
+      label.form-label(for='distance') Distance 
+      select.form-select(
+        id='distance'
         name='distance'
         required
       )
@@ -55,15 +63,19 @@ block content
             selected=(weapon.distance === selectOption)
           ) #{selectOption}
     
-    label Range (for ranged/thrown weapons only)
-      input(
+    .mb-3
+      label.form-label(for='rangeFt') Range (for ranged/thrown weapons only)
+      input.form-control(
+        id='rangeFt'
         name='rangeFt'
         type='number'
         value=weapon.rangeFt
       )
     
-    label Damage Dice (format: #d#)
-      input(
+    .mb-3
+      label.form-label(for='damageDice') Damage Dice (format: #d#)
+      input.form-control(
+        id='damageDice'
         name='damageDice'
         type='text'
         pattern="^\d+d\d+$"
@@ -71,8 +83,10 @@ block content
         required
       )
     
-    label Damage type
-      select(
+    .mb-3
+      label.form-label(for='damageType') Damage type
+      select.form-select(
+        id='damageType'
         name='damageType'
         required
       )
@@ -89,29 +103,36 @@ block content
             selected=(weapon.damageType === selectOption)
           ) #{selectOption}
     
-    label Weight (lb)
-      input(
+    .mb-3
+      label.form-label(for=weightLb) Weight (lb)
+      input.form-control(
+        id='weightLb'
         name='weightLb'
         type='number'
         required
         value=weapon.weightLb
       )
 
-    label Weapon Properties 
-      each prop in weapon.properties 
-        input(
-          name='properties'
-          id=`prop${prop._id}`
-          type='checkbox'
-          checked=prop.checked
-        )
-        label(for=`prop${prop._id}`) #{prop.name}
+    fieldset.mb-3
+      legend Weapon Properties 
+      each prop in weapon.properties
+        div.form-check
+          input.form-check-input(
+            name='properties'
+            id=`prop${prop._id}`
+            type='checkbox'
+            checked=prop.checked
+          )
+          label.form-check-label(for=`prop${prop._id}`) #{prop.name}
 
-    label Special rules 
-      textarea(
+    .mb-3
+      label.form-label(for='special') Special rules 
+      textarea.form-control(
+        id='special'
         name='special'
       )
     
-    input(
-      type='submit'
-    )
+    .mb-3
+      input.btn.btn-primary(
+        type='submit'
+      )
