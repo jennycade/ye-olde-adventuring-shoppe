@@ -1,7 +1,8 @@
 extend layout 
 
 block content 
-  form(method='POST' action='/')
+  
+  form(method='POST' action='')
     .mb-3
       label.form-label(for='name') Name 
       input.form-control(
@@ -35,9 +36,7 @@ block content
           disabled
           selected=(weapon.class === undefined)
         )
-        -
-          const classOptions = ['simple', 'martial', 'non-simple'];
-        for selectOption in classOptions 
+        for selectOption in weaponDefinitions.classes
           option(
             value=selectOption
             selected=(weapon.class === selectOption)
@@ -55,9 +54,7 @@ block content
           disabled
           selected=(weapon.distance === undefined)
         )
-        -
-          const distanceOptions = ['melee', 'ranged'];
-        for selectOption in distanceOptions 
+        for selectOption in weaponDefinitions.distances 
           option(
             value=selectOption
             selected=(weapon.distance === selectOption)
@@ -68,7 +65,7 @@ block content
       input.form-control(
         id='rangeFt'
         name='rangeFt'
-        type='number'
+        type='text'
         value=weapon.rangeFt
       )
     
@@ -78,7 +75,7 @@ block content
         id='damageDice'
         name='damageDice'
         type='text'
-        pattern="^\d+d\d+$"
+        pattern="^\\d+d\\d+$"
         placeholder='e.g. 1d8 or 2d10'
         value=weapon.damageDice
         required
@@ -96,9 +93,7 @@ block content
           disabled
           selected=(weapon.damageType === undefined)
         )
-        -
-          const damageTypeOptions = ['bludgeoning', 'piercing', 'slashing', 'none'];
-        for selectOption in damageTypeOptions 
+        for selectOption in weaponDefinitions.damageTypes 
           option(
             value=selectOption
             selected=(weapon.damageType === selectOption)

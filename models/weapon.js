@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+// import hard-coded definitions
+const weaponDefinitions = require('./weaponDefinitions');
+
 const WeaponSchema = new Schema(
   {
     name: {
@@ -16,12 +19,12 @@ const WeaponSchema = new Schema(
     class: {
       type: String,
       required: true,
-      enum: ['simple', 'martial', 'non-simple'],
+      enum: weaponDefinitions.classes,
     },
     distance: {
       type: String,
       required: false,
-      enum: ['melee', 'ranged']
+      enum: weaponDefinitions.distances,
     },
     damageDice: {
       type: String,
@@ -31,7 +34,7 @@ const WeaponSchema = new Schema(
     damageType: {
       type: String,
       required: true,
-      enum: ['bludgeoning', 'piercing', 'slashing', 'none'],
+      enum: weaponDefinitions.damageTypes,
     },
     weightLb: {
       type: Number,

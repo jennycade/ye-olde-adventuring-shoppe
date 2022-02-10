@@ -75,6 +75,12 @@ const convertDocToFormData = (weapon, weaponProperties) => {
   return formData;
 };
 
+// helper - get weaponProperties the same way every time for forms!
+const getWeaponProperties = async () => {
+  const weapons = await WeaponProperty.find().sort('name').exec();
+  return weapons;
+}
+
 // get form to update
 exports.updateGet = async (req, res, next) => {
   try {
@@ -85,7 +91,8 @@ exports.updateGet = async (req, res, next) => {
       err.status = 404
       return next(err);
     }
-    const weaponProperties = await WeaponProperty.find().sort('name').exec();
+    
+    const weaponProperties = await getWeaponProperties();
 
     // make the form
     const formData = convertDocToFormData(weapon, weaponProperties);
@@ -93,7 +100,8 @@ exports.updateGet = async (req, res, next) => {
       'weaponForm',
       {
         title: `Update ${weapon.name}`,
-        weapon: formData
+        weapon: formData,
+        weaponDefinitions: require('../models/weaponDefinitions'),
       }
     )
 
@@ -103,29 +111,93 @@ exports.updateGet = async (req, res, next) => {
 };
 
 // helper - form -> db
-const convertFormDataToDoc = async (req) => {
-
+const convertPropertiesToArray = (req, res, next) => {
+  // properties -> array
+  if (!(req.body.properties instanceof Array)) {
+    if (typeof req.body.properties === 'undefined') {
+      req.body.properties = [];
+    } else {
+      req.body.properties = new Array(req.body.properties);
+    }
+  }
+  next();
 }
 
 // validate
+const weaponDefinitions = require('../models/weaponDefinitions');
 const validationRules = () => {
   return [
     body('name')
       .trim().isLength({ min: 1}).escape().withMessage('Name required')
       .isLength({ max: 100}).withMessage('Name must be less than 100 characters'),
     body('costGp')
-      .trim().isFloat({min: 0}).withMessage('Cost must be a number'),
+      .trim().escape().isFloat({min: 0}).withMessage('Cost must be a number'),
     body('class')
-      .escape().isIn(['simple', 'martial', 'non-simple']).withMessage('Choose a valid weapon class'),
+      .escape().isIn(weaponDefinitions.classes).withMessage('Choose a valid weapon class'),
     body('distance')
-      .trim().escape(),
+      .escape().isIn(weaponDefinitions.distances).withMessage('Choose a valid weapon distance'),
+    body('range')
+      .trim().escape().optional({checkFalsy: true}),
+    body('damageDice')
+      .trim().isLength({ min: 1}).escape().withMessage('Damage dice required')
+      .matches(/^\d+d\d+$/).withMessage('Damage dice must match format (#)d(#)'),
+    body('damageType')
+      .escape().isIn(weaponDefinitions.damageTypes).withMessage('Choose a valid damage type'),
+    body('weightLb')
+      .trim().escape().isFloat({min:0}).withMessage('Weight must be a number'),
+    body('properties.*').escape(),
+    body('special')
+      .trim().escape().optional({checkFalsy: true}),
   ];
 }
 
-// process update form
-exports.updatePost = async (req, res, next) => {
+const processWeaponFormData = async (req, res, next) => {
+  const errors = validationResult(req);
+
+  const weapon = new Weapon({
+    name: req.body.name,
+    costGp: req.body.costGp,
+    class: req.body.class,
+    rangeFt: req.body.rangeFt,
+    distance: req.body.distance,
+    damageDice: req.body.damageDice,
+    damageType: req.body.damageType,
+    weightLb: req.body.weightLb,
+    special: req.body.special,
+  });
+
+  if (!errors.isEmpty()) {
+    // re-render the form
+
+    // get weapon and weapon properties
+    const weaponProperties = await getWeaponProperties();
+
+    // make the form
+    const formData = convertDocToFormData(weapon, weaponProperties);
+    res.render(
+      'weaponForm',
+      {
+        title: `Update ${weapon.name}`,
+        weapon: formData,
+        weaponDefinitions: require('../models/weaponDefinitions'),
+        errors: errors.array(),
+      }
+    );
+    return;
+  } else {
+    // valid, save and redirect
+    await weapon.save((err) => { return next(err); });
+    res.redirect(weapon.url);
+  }
 
 }
+
+// process update form
+exports.updatePost = [
+  convertPropertiesToArray,
+  validationRules,
+  processWeaponFormData,
+];
 
 // get form to delete
 exports.deleteGet = async(req, res, next) => {
