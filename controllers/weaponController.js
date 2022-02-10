@@ -99,6 +99,16 @@ exports.updateGet = async (req, res, next) => {
   }
 };
 
+// helper - form -> db
+const convertFormDataToDoc = async (req) => {
+  
+}
+
+// process update form
+exports.updatePost = async (req, res, next) => {
+
+}
+
 // get form to delete
 exports.deleteGet = async(req, res, next) => {
   res.render(
