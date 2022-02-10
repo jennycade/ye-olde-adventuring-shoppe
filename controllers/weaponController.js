@@ -1,3 +1,6 @@
+const async = require('async');
+const { body, validationResult } = require('express-validator');
+
 const Weapon = require('../models/weapon');
 const WeaponProperty = require('../models/weaponProperty');
 
@@ -101,7 +104,22 @@ exports.updateGet = async (req, res, next) => {
 
 // helper - form -> db
 const convertFormDataToDoc = async (req) => {
-  
+
+}
+
+// validate
+const validationRules = () => {
+  return [
+    body('name')
+      .trim().isLength({ min: 1}).escape().withMessage('Name required')
+      .isLength({ max: 100}).withMessage('Name must be less than 100 characters'),
+    body('costGp')
+      .trim().isFloat({min: 0}).withMessage('Cost must be a number'),
+    body('class')
+      .escape().isIn(['simple', 'martial', 'non-simple']).withMessage('Choose a valid weapon class'),
+    body('distance')
+      .trim().escape(),
+  ];
 }
 
 // process update form
