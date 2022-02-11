@@ -164,8 +164,12 @@ const processWeaponFormData = async (req, res, next) => {
     damageDice: req.body.damageDice,
     damageType: req.body.damageType,
     weightLb: req.body.weightLb,
+    properties: req.body.properties,
     special: req.body.special,
   });
+
+  // wth is properties?
+  console.log(weapon.properties);
 
   // if it's an update, add the id
   if (isUpdate) {
@@ -187,7 +191,7 @@ const processWeaponFormData = async (req, res, next) => {
         weapon: formData,
         weaponDefinitions: require('../models/weaponDefinitions'),
         errors: errors.array(),
-        properties: (typeof req.body.properties === 'undefined' ? [] : req.body.properties),
+        properties: req.body.properties,
       }
     );
     return;

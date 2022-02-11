@@ -124,11 +124,12 @@ block content
         div.form-check
           input.form-check-input(
             name='properties'
-            id=`prop${prop._id}`
+            id=prop._id
             type='checkbox'
             checked=prop.checked
+            value=prop._id
           )
-          label.form-check-label(for=`prop${prop._id}`) #{prop.name}
+          label.form-check-label(for=prop._id) #{prop.name}
 
     .mb-3
       label.form-label(for='special') Special rules 
