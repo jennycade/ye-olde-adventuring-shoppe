@@ -134,8 +134,9 @@ const processArmorFormData = async (req, res, next) => {
       'armorForm',
       {
         title: `Update ${armor.name}`,
-        armor,
-        armorDefinitions,
+        item: armor,
+        armorTypes: armorDefinitions.armorTypes,
+        sizes: armorDefinitions.sizes,
         errors: errors.array(),
       }
     );
