@@ -219,8 +219,14 @@ exports.updatePost = [
 
 // get form to delete
 exports.deleteGet = async(req, res, next) => {
+  // get the weapon to delete
+  const weapon = await Weapon.findById(req.params.id, 'name')
+
   res.render(
-    'layout',
-    { title: 'Delete'}
+    'deleteForm',
+    {
+      title: 'Confirm delete',
+      item: weapon
+    }
   );
 };

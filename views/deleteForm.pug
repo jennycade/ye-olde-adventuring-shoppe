@@ -1,0 +1,22 @@
+extends layout 
+
+block content 
+  h1= title 
+
+  form(method='POST' action='')
+    p.mb-3 Are you sure you want to delete #{item.name}?
+
+    input#id.form-control(
+      type='hidden'
+      name='id'
+      required
+      value=item._id
+    )
+
+    .mb-3 
+      input.btn.btn-danger(
+        type='submit'
+        value='Delete'
+      )
+      | 
+      a.btn.btn-outline-secondary(href=item.url) Cancel
