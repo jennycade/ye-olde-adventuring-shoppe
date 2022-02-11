@@ -1,10 +1,19 @@
 extend layout 
 
 block content 
-  
+  h1= title 
+
+  if errors 
+    .alert.alert-danger(role='alert')
+      p Correct the following errors: 
+      ul 
+        for error in errors 
+          li= error.msg
+
   form(method='POST' action='')
+    p.mb-3 Fields marked with * are required
     .mb-3
-      label.form-label(for='name') Name 
+      label.form-label(for='name') Name *
       input.form-control(
         id='name'
         name='name'
@@ -15,7 +24,7 @@ block content
       )
 
     .mb-3
-      label.form-label(for='costGp') Cost (gp)
+      label.form-label(for='costGp') Cost (gp) *
       input.form-control(
         id='costGp'
         name='costGp'
@@ -25,7 +34,7 @@ block content
       )
 
     .mb-3
-      label.form-label(for='class') Weapon class 
+      label.form-label(for='class') Weapon class *
       select.form-select(
         id='class'
         name='class'
@@ -43,7 +52,7 @@ block content
           ) #{selectOption}
     
     .mb-3
-      label.form-label(for='distance') Distance 
+      label.form-label(for='distance') Distance *
       select.form-select(
         id='distance'
         name='distance'
@@ -70,7 +79,7 @@ block content
       )
     
     .mb-3
-      label.form-label(for='damageDice') Damage Dice (format: #d#)
+      label.form-label(for='damageDice') Damage Dice (format: #d#) *
       input.form-control(
         id='damageDice'
         name='damageDice'
@@ -82,7 +91,7 @@ block content
       )
     
     .mb-3
-      label.form-label(for='damageType') Damage type
+      label.form-label(for='damageType') Damage type *
       select.form-select(
         id='damageType'
         name='damageType'
@@ -100,7 +109,7 @@ block content
           ) #{selectOption}
     
     .mb-3
-      label.form-label(for=weightLb) Weight (lb)
+      label.form-label(for=weightLb) Weight (lb) *
       input.form-control(
         id='weightLb'
         name='weightLb'

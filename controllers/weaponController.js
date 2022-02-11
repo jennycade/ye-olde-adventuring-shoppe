@@ -152,6 +152,7 @@ const validationRules = () => {
 }
 
 const processWeaponFormData = async (req, res, next) => {
+  const isUpdate = !!req.params.id
   const errors = validationResult(req);
 
   const weapon = new Weapon({
@@ -165,6 +166,11 @@ const processWeaponFormData = async (req, res, next) => {
     weightLb: req.body.weightLb,
     special: req.body.special,
   });
+
+  // if it's an update, add the id
+  if (isUpdate) {
+    weapon._id = req.params.id;
+  }
 
   if (!errors.isEmpty()) {
     // re-render the form
@@ -181,21 +187,29 @@ const processWeaponFormData = async (req, res, next) => {
         weapon: formData,
         weaponDefinitions: require('../models/weaponDefinitions'),
         errors: errors.array(),
+        properties: (typeof req.body.properties === 'undefined' ? [] : req.body.properties),
       }
     );
     return;
   } else {
     // valid, save and redirect
-    await weapon.save((err) => { return next(err); });
+    if (isUpdate) {
+      await Weapon.findByIdAndUpdate(
+        req.params.id,
+        weapon,
+      );
+    } else {
+      await weapon.save((err) => { return next(err); });
+    }
+    // redirect
     res.redirect(weapon.url);
   }
-
 }
 
 // process update form
 exports.updatePost = [
   convertPropertiesToArray,
-  validationRules,
+  validationRules(),
   processWeaponFormData,
 ];
 
