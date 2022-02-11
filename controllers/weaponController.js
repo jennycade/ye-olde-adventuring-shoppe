@@ -188,9 +188,6 @@ const processWeaponFormData = async (req, res, next) => {
     special: req.body.special,
   });
 
-  // wth is properties?
-  console.log(weapon.properties);
-
   // if it's an update, add the id
   if (isUpdate) {
     weapon._id = req.params.id;

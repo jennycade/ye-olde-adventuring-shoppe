@@ -1,5 +1,6 @@
 exports.armorTypes = ['light', 'medium', 'heavy', 'shield'];
 exports.sizes = ['small', 'medium'];
+exports.stealthDisadvantages = ['true', 'false'];
 exports.donningDoffingTimes = {
   'light': {
     don: '1 minute',

@@ -25,6 +25,7 @@ router.post('/weapons/:id/delete', weaponController.deletePost);
 router.get('/armor/', armorController.armorList);
 router.get('/armor/:id', armorController.armorDetail);
 router.get('/armor/:id/update', armorController.updateGet);
+router.post('/armor/:id/update', armorController.updatePost);
 router.get('/armor/:id/delete', armorController.deleteGet);
 
 // shops
