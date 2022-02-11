@@ -3,13 +3,27 @@ extends itemDetail
 block itemDetails 
 
     dt Weapon type 
-    dd #{item.category} item
+    dd #{item.category}
 
     dt Damage roll
     dd #{item.damageDice} #{item.damageType}
-    dd Minimum damage: #{item.minDamage}
-    dd Mean damage: #{item.meanDamage}
-    dd Max damage: #{item.maxDamage}
+    .container-fluid.px-0
+      .row
+        .col-sm-4
+          .card
+            .card-header Minimum damage
+            .card-body
+              p.card-text #{item.minDamage}
+        .col-sm-4
+          .card
+            .card-header Mean damage
+            .card-body
+              p.card-text #{item.meanDamage}
+        .col-sm-4
+          .card
+            .card-header Maximum damage
+            .card-body
+              p.card-text #{item.maxDamage}
 
     dt Properties 
     dd 
