@@ -50,28 +50,48 @@ exports.weaponDetail = async (req, res, next) => {
 
 // helpers
 // db entry -> form
-const convertDocToFormData = (weapon, weaponProperties) => {
-  const formData = {
-    name: weapon.name,
-    costGp: weapon.costGp,
-    class: weapon.class,
-    distance: weapon.distance,
-    damageDice: weapon.damageDice,
-    damageType: weapon.damageType,
-    weightLb: weapon.weightLb,
-    rangeFt: weapon.rangeFt,
-    special: weapon.special,
-    image: weapon.image,
-  };
+const convertDocToFormData = (weapon = null, weaponProperties) => {
+  let formData;
+  
+  if (weapon === null) {
+    // blank form!
+    formData = {
+      name: '',
+      costGp: '',
+      class: undefined,
+      distance: undefined,
+      damageDice: '',
+      damageType: undefined,
+      weightLb: '',
+      rangeFt: '',
+      special: '',
+      image: '',
+    };
+  } else {
+    // populate with existing values
+    formData = {
+      name: weapon.name,
+      costGp: weapon.costGp,
+      class: weapon.class,
+      distance: weapon.distance,
+      damageDice: weapon.damageDice,
+      damageType: weapon.damageType,
+      weightLb: weapon.weightLb,
+      rangeFt: weapon.rangeFt,
+      special: weapon.special,
+      image: weapon.image,
+    };
+  }
+  // properties
   const props = weaponProperties.map(prop => {
     return {
       _id: prop._id,
       name: prop.name,
-      checked: weapon.properties.includes(prop._id)
+      checked: (weapon === null) ? false : weapon.properties.includes(prop._id)
     }
   });
-
   formData.properties = props;
+
   return formData;
 };
 
@@ -152,7 +172,7 @@ const validationRules = () => {
 }
 
 const processWeaponFormData = async (req, res, next) => {
-  const isUpdate = !!req.params.id
+  const isUpdate = !!req.params.id;
   const errors = validationResult(req);
 
   const weapon = new Weapon({
@@ -191,7 +211,7 @@ const processWeaponFormData = async (req, res, next) => {
         weapon: formData,
         weaponDefinitions: require('../models/weaponDefinitions'),
         errors: errors.array(),
-        properties: req.body.properties,
+        properties: req.body.properties, // TODO: make sure this renders all of them, not just selected properties
       }
     );
     return;
@@ -203,9 +223,10 @@ const processWeaponFormData = async (req, res, next) => {
         weapon,
       );
     } else {
-      await weapon.save((err) => { return next(err); });
+      await weapon.save((err) => {
+        if (err) { return next(err); }
+      });
     }
-    // redirect
     res.redirect(weapon.url);
   }
 }
@@ -258,4 +279,23 @@ exports.deletePost = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
+}
+
+exports.createGet = async (req, res, next) => {
+  // blank form!
+  const weaponProperties = await getWeaponProperties();
+  const blankWeapon = convertDocToFormData(null, weaponProperties);
+  
+  res.render(
+    'weaponForm',
+    {
+      title: 'Create a weapon',
+      weaponDefinitions: require('../models/weaponDefinitions'),
+      weapon: blankWeapon,
+    }
+  )
+};
+
+exports.createPost = async (req, res, next) => {
+
 }

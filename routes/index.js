@@ -13,6 +13,8 @@ router.get('/', function(req, res, next) {
 
 // weapons
 router.get('/weapons/', weaponController.weaponList);
+router.get('/weapons/create', weaponController.createGet);
+router.post('/weapons/create', weaponController.updatePost);
 router.get('/weapons/:id', weaponController.weaponDetail);
 router.get('/weapons/:id/update', weaponController.updateGet);
 router.post('/weapons/:id/update', weaponController.updatePost);
