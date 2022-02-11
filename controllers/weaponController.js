@@ -219,14 +219,43 @@ exports.updatePost = [
 
 // get form to delete
 exports.deleteGet = async(req, res, next) => {
-  // get the weapon to delete
-  const weapon = await Weapon.findById(req.params.id, 'name')
+  try {
+    // get the weapon to delete
+    const weapon = await Weapon.findById(req.params.id, 'name');
 
-  res.render(
-    'deleteForm',
-    {
-      title: 'Confirm delete',
-      item: weapon
+    if (weapon === null) {
+      const err = new Error('Weapon not found');
+      err.status = 404
+      return next(err);
     }
-  );
+
+    res.render(
+      'deleteForm',
+      {
+        title: 'Confirm delete',
+        item: weapon
+      }
+    );
+  } catch (err) {
+    return next(err);
+  }
 };
+
+// delete!
+exports.deletePost = async (req, res, next) => {
+  try {
+    // get the weapon to delete
+    const weapon = await Weapon.findByIdAndRemove(req.body.id);
+
+    if (weapon === null) {
+      const err = new Error('Weapon not found');
+      err.status = 404
+      return next(err);
+    }
+
+    res.redirect('/weapons');
+    
+  } catch (err) {
+    return next(err);
+  }
+}
