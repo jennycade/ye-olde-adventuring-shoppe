@@ -1,0 +1,55 @@
+mixin requiredSelectField(fieldName, labelText, allOptions, currentVal)
+  .mb-3
+    label.form-label(for=fieldName) #{labelText} *
+    select.form-select(
+      id=fieldName
+      name=fieldName
+      required
+    )
+      option(
+        value=''
+        disabled
+        selected=(currentVal === undefined)
+      )
+      for selectOption in allOptions
+        option(
+          value=selectOption
+          selected=(currentVal === selectOption)
+        ) #{selectOption}
+
+mixin requiredTextField(fieldName, labelText, currentVal)
+  .mb-3
+    label.form-label(for=fieldName) #{labelText} *
+    input.form-control(
+      id=fieldName
+      name=fieldName
+      type='text'
+      value=currentVal
+      required=true
+      maxlength=100
+    )
+
+mixin requiredNumberField(fieldName, labelText, currentVal)
+  .mb-3
+    label.form-label(for=fieldName) #{labelText} *
+    input.form-control(
+      id=fieldName
+      name=fieldName
+      type='number'
+      value=currentVal
+      required=true
+    )
+
+mixin optionalTextArea(fieldName, labelText, currentVal)
+  .mb-3
+    label.form-label(for=fieldName) #{labelText} 
+    textarea.form-control(
+      id=fieldName
+      name=fieldName
+    ) #{currentVal}
+
+mixin submitButton()
+  .mb-3
+    input.btn.btn-primary(
+      type='submit'
+    )

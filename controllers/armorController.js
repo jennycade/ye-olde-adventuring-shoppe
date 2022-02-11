@@ -1,4 +1,5 @@
 const Armor = require('../models/armor');
+const armorDefinitions = require('../models/armorDefinitions');
 
 // list all
 exports.armorList = async (req, res, next) => {
@@ -51,10 +52,25 @@ exports.armorDetail = async (req, res, next) => {
 
 // get form to update
 exports.updateGet = async(req, res, next) => {
-  res.render(
-    'layout',
-    { title: 'Update'}
-  );
+  try {
+    const armor = await Armor.findById(req.params.id).exec();
+    if (armor === null) {
+      const err = new Error(`Armor not found`);
+      return next(err);
+    }
+    
+    res.render(
+      'armorForm',
+      {
+        title: `Update ${armor.name}`,
+        item: armor,
+        armorTypes: armorDefinitions.armorTypes,
+        sizes: armorDefinitions.sizes,
+      }
+    );
+  } catch (err) {
+    return next(err);
+  }
 };
 
 // get form to delete

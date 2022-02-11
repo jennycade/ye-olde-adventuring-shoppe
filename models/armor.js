@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+const armorDefinitions = require('./armorDefinitions');
+
 const ArmorSchema = new Schema({
   name: {
     type: String,
@@ -11,12 +13,12 @@ const ArmorSchema = new Schema({
   armorType: {
     type: String,
     required: true,
-    enum: ['light', 'medium', 'heavy', 'shield'],
+    enum: armorDefinitions.armorTypes,
   },
   size: {
     type: String,
     required: true,
-    enum: ['small', 'medium'],
+    enum: armorDefinitions.sizes,
   },
   costGp: {
     type: Number,
@@ -50,29 +52,11 @@ ArmorSchema.virtual('url').get(function() {
 });
 
 // donning and doffing time - based on armorType
-const donningDoffingTimes = {
-  'light': {
-    don: '1 minute',
-    doff: '1 minute',
-  },
-  'medium': {
-    don: '5 minutes',
-    doff: '1 minute',
-  },
-  'heavy': {
-    don: '10 minutes',
-    doff: '5 minutes',
-  },
-  'shield': {
-    don: '1 action',
-    doff: '1 action',
-  }
-}
 ArmorSchema.virtual('donningTime').get(function() {
-  return donningDoffingTimes[this.armorType].don;
+  return armorDefinitions.donningDoffingTimes[this.armorType].don;
 });
 ArmorSchema.virtual('doffingTime').get(function() {
-  return donningDoffingTimes[this.armorType].doff;
+  return armorDefinitions.donningDoffingTimes[this.armorType].doff;
 });
 
 module.exports = mongoose.model('Armor', ArmorSchema);
