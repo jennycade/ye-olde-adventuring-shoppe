@@ -6,11 +6,20 @@ exports.armorList = async (req, res, next) => {
     const armor = await Armor.find()
       .sort({name: 1})
       .exec();
+    
+    // append size to armor name
+    const items = armor.map((a) => {
+      return {
+        name: `${a.name} (${a.size})`,
+        url: a.url,
+      }
+    });
+
     res.render(
       'list',
       {
         title: 'All armor',
-        items: armor,
+        items,
       }
     );
   } catch (err) {
@@ -40,7 +49,7 @@ exports.armorDetail = async (req, res, next) => {
   }
 }
 
-// get form to delete
+// get form to update
 exports.updateGet = async(req, res, next) => {
   res.render(
     'layout',
