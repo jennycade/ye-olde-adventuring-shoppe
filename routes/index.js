@@ -33,6 +33,8 @@ router.post('/armor/:id/delete', armorController.deletePost);
 
 // shops
 router.get('/shops/', shopController.shopList);
+router.get('/shops/create', shopController.createGet);
+router.post('/shops/create', shopController.formPost);
 router.get('/shops/:id', shopController.shopDetail);
 router.get('/shops/:id/update', shopController.updateGet);
 router.get('/shops/:id/delete', shopController.deleteGet);

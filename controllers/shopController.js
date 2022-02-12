@@ -1,4 +1,6 @@
 const Shop = require('../models/shop');
+const Armor = require('../models/armor');
+const Weapon = require('../models/weapon');
 
 // list all shops - TODO: for DMs only!
 exports.shopList = async (req, res, next) => {
@@ -38,7 +40,31 @@ exports.shopDetail = async (req, res, next) => {
   }
 };
 
-// get form to delete
+const getFormData = async () => {
+  const allArmor = await Armor.find({}, 'name url')
+    .sort({name: 1})
+    .exec();
+  const allWeapons = await Weapon.find({}, 'name url')
+    .sort({name: 1})
+    .exec();
+  return { allArmor, allWeapons };
+}
+
+exports.createGet = async (req, res, next) => {
+  // get the form data
+  try {
+    const { allArmor, allWeapons } = await getFormData();
+
+    
+
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.formPost = [];
+
+// get form to update
 exports.updateGet = async(req, res, next) => {
   res.render(
     'layout',

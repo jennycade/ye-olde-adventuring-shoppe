@@ -1,0 +1,20 @@
+extends layout 
+
+block content 
+  include mixins/formElements
+
+  h1= title 
+
+  if errors 
+    .alert.alert-danger(role='alert')
+      p Correct the following errors: 
+      ul 
+        for error in errors 
+          li= error.msg
+
+  form(method='POST' action='')
+    p.mb-3 Fields marked with * are required
+
+    +optionalTextField('name', 'Name', item.name)
+    +optionalTextArea('description', 'Description', item.description)
+    
