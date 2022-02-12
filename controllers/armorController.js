@@ -109,8 +109,8 @@ const validationRules = () => {
 
 const createArmorObj = (req = null, id = null) => {
   let armor;
-  if (id) {
-    // update
+  if (req) {
+    // handle form data
     armor = new Armor({
       name: req.body.name,
       armorType: req.body.armorType,
@@ -122,8 +122,10 @@ const createArmorObj = (req = null, id = null) => {
       stealthDisadvantage: req.body.stealthDisadvantage,
       weightLb: req.body.weightLb,
       description: req.body.description,
-      _id: id,
     });
+    if (id) {
+      armor._id = id;
+    }
   } else {
     // create new
     armor = new Armor({
@@ -134,7 +136,7 @@ const createArmorObj = (req = null, id = null) => {
       costGp: '',
       armorClass: '',
       minStrength: 0,
-      stealthDisadvantage: false,
+      stealthDisadvantage: '',
       weightLb: '',
       description: '',
     });
@@ -166,12 +168,13 @@ const processArmorFormData = async (req, res, next) => {
         req.params.id,
         armor,
       );
+      res.redirect(armor.url);
     } else {
       await armor.save((err) => {
         if (err) { return next(err); }
       });
+      res.redirect(armor.url);
     }
-    res.redirect(armor.url);
   }
 }
 
@@ -210,9 +213,7 @@ exports.createGet = async (req, res, next) => {
   );
 };
 
-exports.createPost = async (req, res, next) => {
-  res.render(
-    'layout',
-    { title: 'Create armor'}
-  );
-};
+exports.createPost = [
+  validationRules(),
+  processArmorFormData,
+];
