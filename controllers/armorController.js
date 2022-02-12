@@ -185,17 +185,44 @@ exports.updatePost = [
 
 // get form to delete
 exports.deleteGet = async (req, res, next) => {
-  res.render(
-    'layout',
-    { title: 'Delete'}
-  );
+  try {
+    // find the armor to delete
+    const armor = await Armor.findById(req.params.id, 'name');
+    if (armor === null) {
+      const err = new Error('Armor not found');
+      err.status = 404;
+      return next(err);
+    }
+
+    // delete form
+    res.render(
+      'deleteForm',
+      {
+        title: 'Confirm delete',
+        item: armor
+      }
+    );
+  } catch (err) {
+    return next(err);
+  }
 };
 
-exports.deletePush = async (req, res, next) => {
-  res.render(
-    'layout',
-    { title: 'Delete'}
-  );
+exports.deletePost = async (req, res, next) => {
+  try {
+    // find and delete
+    const armor = await Armor.findByIdAndRemove(req.body.id);
+    
+    if (armor === null) {
+      const err = new Error('Armor not found');
+      err.status = 404;
+      return next(err);
+    }
+
+    // redirect to armor
+    res.redirect('/armor');
+  } catch (err) {
+    return next(err);
+  }
 };
 
 exports.createGet = async (req, res, next) => {

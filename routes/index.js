@@ -29,6 +29,7 @@ router.get('/armor/:id', armorController.armorDetail);
 router.get('/armor/:id/update', armorController.updateGet);
 router.post('/armor/:id/update', armorController.updatePost);
 router.get('/armor/:id/delete', armorController.deleteGet);
+router.post('/armor/:id/delete', armorController.deletePost);
 
 // shops
 router.get('/shops/', shopController.shopList);
