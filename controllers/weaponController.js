@@ -219,12 +219,13 @@ const processWeaponFormData = async (req, res, next) => {
         req.params.id,
         weapon,
       );
+      res.redirect(weapon.url);
     } else {
       await weapon.save((err) => {
         if (err) { return next(err); }
       });
+      res.redirect(weapon.url);
     }
-    res.redirect(weapon.url);
   }
 }
 
