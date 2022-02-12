@@ -107,27 +107,46 @@ const validationRules = () => {
   ]
 };
 
+const createArmorObj = (req = null, id = null) => {
+  let armor;
+  if (id) {
+    // update
+    armor = new Armor({
+      name: req.body.name,
+      armorType: req.body.armorType,
+      size: req.body.size,
+      size: req.body.size,
+      costGp: req.body.costGp,
+      armorClass: req.body.armorClass,
+      minStrength: req.body.minStrength,
+      stealthDisadvantage: req.body.stealthDisadvantage,
+      weightLb: req.body.weightLb,
+      description: req.body.description,
+      _id: id,
+    });
+  } else {
+    // create new
+    armor = new Armor({
+      name: '',
+      armorType: undefined,
+      size: undefined,
+      size: undefined,
+      costGp: '',
+      armorClass: '',
+      minStrength: 0,
+      stealthDisadvantage: false,
+      weightLb: '',
+      description: '',
+    });
+  }
+  return armor;
+}
+
 const processArmorFormData = async (req, res, next) => {
   const isUpdate = !!req.params.id;
   const errors = validationResult(req);
 
-  const armor = new Armor({
-    name: req.body.name,
-    armorType: req.body.armorType,
-    size: req.body.size,
-    size: req.body.size,
-    costGp: req.body.costGp,
-    armorClass: req.body.armorClass,
-    minStrength: req.body.minStrength,
-    stealthDisadvantage: req.body.stealthDisadvantage,
-    weightLb: req.body.weightLb,
-    description: req.body.description,
-  });
-
-  // add id if it's an update
-  if (isUpdate) {
-    armor._id = req.params.id;
-  }
+  const armor = createArmorObj(req, req.params.id);
 
   if (!errors.isEmpty()) {
     res.render(
@@ -162,9 +181,38 @@ exports.updatePost = [
 ];
 
 // get form to delete
-exports.deleteGet = async(req, res, next) => {
+exports.deleteGet = async (req, res, next) => {
   res.render(
     'layout',
     { title: 'Delete'}
+  );
+};
+
+exports.deletePush = async (req, res, next) => {
+  res.render(
+    'layout',
+    { title: 'Delete'}
+  );
+};
+
+exports.createGet = async (req, res, next) => {
+  // blank armor
+  const blankArmor = createArmorObj();
+  // render form
+  res.render(
+    'armorForm',
+    {
+      title: `Create armor`,
+      item: blankArmor,
+      armorTypes: armorDefinitions.armorTypes,
+      sizes: armorDefinitions.sizes,
+    }
+  );
+};
+
+exports.createPost = async (req, res, next) => {
+  res.render(
+    'layout',
+    { title: 'Create armor'}
   );
 };

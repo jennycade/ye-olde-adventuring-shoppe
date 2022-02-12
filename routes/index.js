@@ -23,6 +23,8 @@ router.post('/weapons/:id/delete', weaponController.deletePost);
 
 // armor
 router.get('/armor/', armorController.armorList);
+router.get('/armor/create', armorController.createGet);
+router.post('/armor/create', armorController.updatePost);
 router.get('/armor/:id', armorController.armorDetail);
 router.get('/armor/:id/update', armorController.updateGet);
 router.post('/armor/:id/update', armorController.updatePost);
