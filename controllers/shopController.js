@@ -48,7 +48,11 @@ const getFormData = async () => {
     .sort({name: 1})
     .exec();
   const allArmor = preAllArmor.map(armor => {
-    return { name: armor.displayName, url: armor.url };
+    return {
+      _id: armor._id,
+      name: armor.displayName,
+      url: armor.url
+    };
   })
   return { allArmor, allWeapons };
 }
@@ -97,7 +101,9 @@ exports.createGet = async (req, res, next) => {
   }
 };
 
-exports.formPost = [];
+exports.formPost = [
+  // convert inventory fields to 
+];
 
 // get form to update
 exports.updateGet = async(req, res, next) => {
