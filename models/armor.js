@@ -51,6 +51,12 @@ ArmorSchema.virtual('url').get(function() {
   return `/armor/${this._id}`;
 });
 
+// virtual for display name
+ArmorSchema.virtual('displayName').get(function() {
+  return `${this.name} (${this.size})`;
+});
+
+
 // donning and doffing time - based on armorType
 ArmorSchema.virtual('donningTime').get(function() {
   return armorDefinitions.donningDoffingTimes[this.armorType].don;

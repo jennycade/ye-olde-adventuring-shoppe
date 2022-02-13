@@ -41,12 +41,15 @@ exports.shopDetail = async (req, res, next) => {
 };
 
 const getFormData = async () => {
-  const allArmor = await Armor.find({}, 'name url')
-    .sort({name: 1})
-    .exec();
   const allWeapons = await Weapon.find({}, 'name url')
     .sort({name: 1})
     .exec();
+  const preAllArmor = await Armor.find({}, 'name size displayName url')
+    .sort({name: 1})
+    .exec();
+  const allArmor = preAllArmor.map(armor => {
+    return { name: armor.displayName, url: armor.url };
+  })
   return { allArmor, allWeapons };
 }
 
