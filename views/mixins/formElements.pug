@@ -28,6 +28,16 @@ mixin requiredTextField(fieldName, labelText, currentVal)
       required=true
       maxlength=100
     )
+mixin optionalTextField(fieldName, labelText, currentVal)
+  .mb-3
+    label.form-label(for=fieldName) #{labelText} *
+    input.form-control(
+      id=fieldName
+      name=fieldName
+      type='text'
+      value=currentVal
+      maxlength=100
+    )
 
 mixin requiredNumberField(fieldName, labelText, currentVal)
   .mb-3
@@ -39,6 +49,7 @@ mixin requiredNumberField(fieldName, labelText, currentVal)
       value=currentVal
       required=true
     )
+
 
 mixin optionalTextArea(fieldName, labelText, currentVal)
   .mb-3
@@ -53,3 +64,17 @@ mixin submitButton()
     input.btn.btn-primary(
       type='submit'
     )
+
+mixin inventoryRowField(fieldName, labelText, currentVal)
+  .row.mb-3
+    .col-sm-2
+      input.form-control(
+        id=fieldName
+        name=fieldName
+        type='number'
+        value=currentVal
+        required=true
+      )
+    .col-sm-10
+      label.form-label(for=fieldName) #{labelText}
+    

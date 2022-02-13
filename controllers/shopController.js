@@ -50,12 +50,44 @@ const getFormData = async () => {
   return { allArmor, allWeapons };
 }
 
+const convertInventoryArrayToObj = (arr, allInventoryItems) => {
+  // takes in [objId1, objId3, objId1] and inventory list with names and ids (e.g.)
+  // returns { objId1: {name: 'object 1', qty: 2}, objId2: {name: 'object 2', qty: 0}, objId3: {name: 'object 3', qty: 1}}
+  const inventoryObj = {};
+  allInventoryItems.forEach((item) => {
+    // count occurrences
+    const n = arr.filter(x => x === item._id).length;
+    inventoryObj.item = {
+      name: item.name,
+      id: item._id,
+      qty: n,
+    }
+  });
+
+  return inventoryObj;
+};
+
 exports.createGet = async (req, res, next) => {
   // get the form data
   try {
     const { allArmor, allWeapons } = await getFormData();
 
-    
+    const blankShop = new Shop({
+      name: '',
+      description: '',
+      weaponsInStock: convertInventoryArrayToObj([], allWeapons),
+      armorInStock: convertInventoryArrayToObj([], allArmor),
+    });
+
+    res.render(
+      'shopForm',
+      {
+        title: 'Create shop',
+        item: blankShop,
+        allWeapons,
+        allArmor,
+      }
+    )
 
   } catch (err) {
     return next(err);
