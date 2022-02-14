@@ -2,6 +2,8 @@ const Shop = require('../models/shop');
 const Armor = require('../models/armor');
 const Weapon = require('../models/weapon');
 
+const { body, validationResult } = require('express-validator');
+
 // list all shops - TODO: for DMs only!
 exports.shopList = async (req, res, next) => {
   try {
@@ -59,7 +61,12 @@ const getFormData = async () => {
 
 const convertInventoryArrayToObj = (arr, allInventoryItems) => {
   // takes in [objId1, objId3, objId1] and inventory list with names and ids (e.g.)
-  // returns { objId1: {name: 'object 1', qty: 2}, objId2: {name: 'object 2', qty: 0}, objId3: {name: 'object 3', qty: 1}}
+  // returns
+  // {
+  //   objId1: {name: 'object 1', qty: 2},
+  //   objId2: {name: 'object 2', qty: 0},
+  //   objId3: {name: 'object 3', qty: 1}
+  // }
   const inventoryObj = {};
   allInventoryItems.forEach((item) => {
     // count occurrences
@@ -72,6 +79,11 @@ const convertInventoryArrayToObj = (arr, allInventoryItems) => {
   });
 
   return inventoryObj;
+};
+
+const convertFormDataToInventoryArrays = (req, res, next) => {
+  // extract all fields with prefix 'weapon' or 'armor'
+  console.log(req.body);
 };
 
 exports.createGet = async (req, res, next) => {
@@ -101,8 +113,43 @@ exports.createGet = async (req, res, next) => {
   }
 };
 
+const getValidationRules = async () => {
+  const { allArmor, allWeapons} = await getFormData();
+
+  const rulesArr = [
+    body('name')
+      .optional({checkFalsy: true}).trim().escape()
+      .isLength({ max: 100 }).withMessage('Name must be less than 100 characters'),
+    body('description')
+      .optional({checkFalsy: true}).trim().escape(),
+  ];
+
+  allWeapons.forEach(weapon => {
+    rulesArr.push(
+      body(`weapon${weapon._id}`)
+        .optional({checkFalsy: true}).trim().escape()
+        .isInt().withMessage('All quantities must be whole numbers')
+    );
+  });
+  allArmor.forEach(armor => {
+    rulesArr.push(
+      body(`armor${armor._id}`)
+        .optional({checkFalsy: true}).trim().escape()
+        .isInt().withMessage('All quantities must be whole numbers')
+    );
+  });
+
+  return rulesArr;
+};
+
 exports.formPost = [
-  // convert inventory fields to 
+  // validate
+  getValidationRules(),
+
+  // convert inventory form data to arrays of object ids
+  convertFormDataToInventoryArrays,
+
+  // process
 ];
 
 // get form to update
