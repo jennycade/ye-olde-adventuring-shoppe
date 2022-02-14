@@ -84,14 +84,14 @@ const convertFormDataToInventoryArrays = (reqBody) => {
   Object.keys(reqBody).forEach(fieldID => {
     if (fieldID.search('weapon') === 0 && parseInt(reqBody[fieldID]) > 0) {
       // parse id
-      const id = fieldID.substring(6);
+      const id = fieldID.substring(7);
       // add qty times to weaponsArr
       for (let i=0; i<parseInt(reqBody[fieldID]); i++) {
         weaponsArr.push(id);
       }
     } else if (fieldID.search('armor') === 0 && parseInt(reqBody[fieldID]) > 0) {
       // parse id
-      const id = fieldID.substring(5);
+      const id = fieldID.substring(6);
       // add qty times to weaponsArr
       for (let i=0; i<parseInt(reqBody[fieldID]); i++) {
         armorArr.push(id);
@@ -134,6 +134,22 @@ exports.createGet = async (req, res, next) => {
   }
 };
 
+const convertInventoryFieldsToArray = (req, res, next) => {
+  const invFields = ['armor', 'weapon'];
+
+  invFields.forEach((type) => {
+    Object.keys(req.body).forEach((fieldID) => {
+      const arr = [];
+      if (fieldID.search(type) === 0) {
+        // want
+        // body.weapons = {id1: inputval1, ...}
+        
+      }
+    });
+  });
+  next();
+};
+
 const getValidationRules = async () => {
   const { allArmor, allWeapons} = await getFormData();
 
@@ -170,12 +186,12 @@ const validationRules = () => {
       .isLength({ max: 100 }).withMessage('Name must be less than 100 characters'),
     body('description')
       .optional({checkFalsy: true}).trim().escape(),
-    body('weapon*')
+    body('weapon.*')
       .optional({checkFalsy: true}).trim().escape()
-      .isInt().withMessage('All quantities must be whole numbers'),
-    body('armor*')
+      .isInt({min:0}).withMessage('All quantities must be whole numbers'),
+    body('armor.*')
       .optional({checkFalsy: true}).trim().escape()
-      .isInt().withMessage('All quantities must be whole numbers'),
+      .isInt({min: 0}).withMessage('All quantities must be whole numbers'),
   ]
 }
 
@@ -214,6 +230,8 @@ const processFormData = async (req, res, next) => {
 }
 
 exports.formPost = [
+  // handle dynamic inventory fields
+  convertInventoryFieldsToArray,
   // validate
   validationRules(),
   // process
