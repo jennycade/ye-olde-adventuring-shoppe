@@ -22,12 +22,12 @@ block content
       legend Weapons in stock 
 
       each weapon in allWeapons
-        +inventoryRowField(`weapon${weapon._id}`, weapon.name, weapon.qty)
+        +inventoryRowField(`weapon${weapon._id}`, weapon.name, weaponsStock[weapon._id])
     
     fieldset.mb-3
       legend Armor in stock 
 
       each armor in allArmor
-        +inventoryRowField(`armor${armor._id}`, armor.name, armor.qty)
+        +inventoryRowField(`armor${armor._id}`, armor.name, armorStock[armor._id])
 
     +submitButton()

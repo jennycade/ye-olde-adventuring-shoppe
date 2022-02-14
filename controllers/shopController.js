@@ -63,27 +63,43 @@ const convertInventoryArrayToObj = (arr, allInventoryItems) => {
   // takes in [objId1, objId3, objId1] and inventory list with names and ids (e.g.)
   // returns
   // {
-  //   objId1: {name: 'object 1', qty: 2},
-  //   objId2: {name: 'object 2', qty: 0},
-  //   objId3: {name: 'object 3', qty: 1}
+  //   objId1: 2,
+  //   objId2: 0,
+  //   objId3: 1
   // }
   const inventoryObj = {};
   allInventoryItems.forEach((item) => {
     // count occurrences
     const n = arr.filter(x => x === item._id).length;
-    inventoryObj.item = {
-      name: item.name,
-      id: item._id,
-      qty: n,
-    }
+    inventoryObj[item._id] = n;
   });
 
   return inventoryObj;
 };
 
-const convertFormDataToInventoryArrays = (req, res, next) => {
+const convertFormDataToInventoryArrays = (reqBody) => {
   // extract all fields with prefix 'weapon' or 'armor'
-  console.log(req.body);
+  const weaponsArr = [];
+  const armorArr = [];
+  Object.keys(reqBody).forEach(fieldID => {
+    if (fieldID.search('weapon') === 0 && parseInt(reqBody[fieldID]) > 0) {
+      // parse id
+      const id = fieldID.substring(6);
+      // add qty times to weaponsArr
+      for (let i=0; i<parseInt(reqBody[fieldID]); i++) {
+        weaponsArr.push(id);
+      }
+    } else if (fieldID.search('armor') === 0 && parseInt(reqBody[fieldID]) > 0) {
+      // parse id
+      const id = fieldID.substring(5);
+      // add qty times to weaponsArr
+      for (let i=0; i<parseInt(reqBody[fieldID]); i++) {
+        armorArr.push(id);
+      }
+    }
+  });
+
+  return { weaponsArr, armorArr };
 };
 
 exports.createGet = async (req, res, next) => {
@@ -94,9 +110,12 @@ exports.createGet = async (req, res, next) => {
     const blankShop = new Shop({
       name: '',
       description: '',
-      weaponsInStock: convertInventoryArrayToObj([], allWeapons),
-      armorInStock: convertInventoryArrayToObj([], allArmor),
+      weaponsInStock: [],
+      armorInStock: [],
     });
+
+    const weaponsStock = convertInventoryArrayToObj([], allWeapons);
+    const armorStock = convertInventoryArrayToObj([], allArmor);
 
     res.render(
       'shopForm',
@@ -105,8 +124,10 @@ exports.createGet = async (req, res, next) => {
         item: blankShop,
         allWeapons,
         allArmor,
+        weaponsStock,
+        armorStock,
       }
-    )
+    );
 
   } catch (err) {
     return next(err);
@@ -142,14 +163,61 @@ const getValidationRules = async () => {
   return rulesArr;
 };
 
+const validationRules = () => {
+  return [
+    body('name')
+      .optional({checkFalsy: true}).trim().escape()
+      .isLength({ max: 100 }).withMessage('Name must be less than 100 characters'),
+    body('description')
+      .optional({checkFalsy: true}).trim().escape(),
+    body('weapon*')
+      .optional({checkFalsy: true}).trim().escape()
+      .isInt().withMessage('All quantities must be whole numbers'),
+    body('armor*')
+      .optional({checkFalsy: true}).trim().escape()
+      .isInt().withMessage('All quantities must be whole numbers'),
+  ]
+}
+
+const processFormData = async (req, res, next) => {
+  // convert inventory form data to arrays of object ids
+  const {weaponsArr, armorArr} = convertFormDataToInventoryArrays(req.body);
+  
+  // make the shop
+  const shop = new Shop({
+    name: body.name,
+    description: body.description,
+    weaponsInStock: weaponsArr,
+    armorInStock: armorArr,
+  });
+
+  // form data errors?
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    // re-render the form
+    const weaponsStock = convertInventoryArrayToObj(weaponsArr, allWeapons);
+    const armorStock = convertInventoryArrayToObj(armorArr, allArmor);
+
+    res.render(
+      'shopForm',
+      {
+        title: 'Create shop',
+        item: blankShop,
+        allWeapons,
+        allArmor,
+        weaponsStock,
+        armorStock,
+        errors: errors.array(),
+      }
+    );
+  }
+}
+
 exports.formPost = [
   // validate
-  getValidationRules(),
-
-  // convert inventory form data to arrays of object ids
-  convertFormDataToInventoryArrays,
-
+  validationRules(),
   // process
+  processFormData,
 ];
 
 // get form to update
