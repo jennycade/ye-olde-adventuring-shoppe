@@ -83,10 +83,8 @@ const convertInventoryArrayToObj = (arr, allInventoryItems) => {
   // }
   const inventoryObj = {};
   allInventoryItems.forEach((item) => {
-    console.log(`Counting item ${item._id}`);
     // count occurrences
     const n = arr.filter(x => x.toString() === item._id.toString()).length;
-    console.log(n);
     inventoryObj[item._id] = n;
   });
 
