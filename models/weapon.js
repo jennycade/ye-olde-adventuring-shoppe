@@ -50,6 +50,10 @@ const WeaponSchema = new Schema(
     image: {
       type: String,
     }
+  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
 

@@ -1,0 +1,27 @@
+extends layout 
+
+block content 
+  h1= title 
+
+  if item.image 
+    img(src=item.image)
+  
+  dl 
+    dt Description 
+    dd #{item.description}
+
+    dt Weapons in stock 
+    each weapon in weaponsInStock 
+      dd #{weapon.qty} x 
+        a(href=weapon.url) #{weapon.name}
+
+    dt Armor in stock 
+    each item in armorInStock 
+      dd #{item.qty} x 
+        a(href=item.url) #{item.displayName}
+
+
+  
+  a.btn.btn-outline-primary(href=`${item.url}/update`) Update 
+  | 
+  a.btn.btn-outline-danger(href=`${item.url}/delete`) Delete

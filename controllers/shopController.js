@@ -22,19 +22,29 @@ exports.shopList = async (req, res, next) => {
   }
 };
 
+
+
 exports.shopDetail = async (req, res, next) => {
   try {
-    const shop = await Shop.findById(req.params.id).exec();
+    const shop = await Shop.findById(req.params.id)
+      .populate('weaponsInStock armorInStock')
+      .exec();
     if (shop === null) {
       const err = new Error(`Shop not found`);
       err.status = 404;
       return next(err);
     }
+
+    const weaponsInStock = convertPopulatedInventoryArrayToObj(shop.weaponsInStock);
+    const armorInStock = convertPopulatedInventoryArrayToObj(shop.armorInStock);
+
     res.render(
       'shopDetail',
       {
         title: shop.name || `Shop ${shop._id}`,
-        shop
+        item: shop,
+        weaponsInStock,
+        armorInStock,
       }
     );
   } catch (err) {
@@ -76,6 +86,60 @@ const convertInventoryArrayToObj = (arr, allInventoryItems) => {
 
   return inventoryObj;
 };
+
+const convertPopulatedInventoryArrayToObj = (arr) => {
+  // takes in something like
+  // arr = [
+  //   {
+  //     _id: 'id1',
+  //     name: 'weaponName1',
+  //     url: 'url1',
+  //     ...
+  //   },
+  //   {
+  //     _id: 'id3',
+  //     name: 'weaponName3',
+  //     url: 'url3',
+  //     ...
+  //   },
+  //   {
+  //     _id: 'id1',
+  //     name: 'weaponName1',
+  //     url: 'url1',
+  //     ...
+  //   }
+  // ]
+  //
+  // and returns
+  // obj = {
+  //   id1: {
+  //     _id: 'id1',
+  //     name: 'weaponName1',
+  //     url: 'url1',
+  //     qty: 2,
+  //     ...
+  //   },
+  //   id3: {
+  //     _id: 'id3',
+  //     name: 'weaponName3',
+  //     url: 'url3',
+  //     qty: 1,
+  //     ...
+  //   }
+  // }
+
+  // copy
+  const inventoryObj = {};
+  const allIds = arr.map(item => item._id);
+  // get unique ids
+  const ids = [... new Set(allIds) ];
+  ids.forEach(id => {
+    // copy item data over
+    inventoryObj[id] = {...arr.find(x => x._id === id).toObject({virtuals: true})};
+    inventoryObj[id].qty = allIds.filter(x => x === id).length;
+  });
+  return inventoryObj;
+}
 
 const convertFormDataToInventoryArrays = (reqBody) => {
   // extract all fields with prefix 'weapon' or 'armor'
@@ -230,8 +294,12 @@ const processFormData = async (req, res, next) => {
     );
   } else {
     // no errors, save it
-    await shop.save();
-    res.redirect(shop.url);
+    try {
+      await shop.save();
+      res.redirect(shop.url);
+    } catch (err) {
+      return next(err);
+    }
   }
 }
 
