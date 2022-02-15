@@ -137,15 +137,16 @@ exports.createGet = async (req, res, next) => {
 const convertInventoryFieldsToArray = (req, res, next) => {
   const invFields = ['armor', 'weapon'];
 
-  invFields.forEach((type) => {
+  invFields.forEach((prefix) => {
+    const obj = {};
     Object.keys(req.body).forEach((fieldID) => {
-      const arr = [];
-      if (fieldID.search(type) === 0) {
+      if (fieldID.search(prefix) === 0) {
         // want
         // body.weapons = {id1: inputval1, ...}
-        
+        obj[fieldID] = req.body[fieldID];
       }
     });
+    req.body[prefix] = obj;
   });
   next();
 };
@@ -165,14 +166,14 @@ const getValidationRules = async () => {
     rulesArr.push(
       body(`weapon${weapon._id}`)
         .optional({checkFalsy: true}).trim().escape()
-        .isInt().withMessage('All quantities must be whole numbers')
+        .isInt().withMessage('All quantities must be positive whole numbers')
     );
   });
   allArmor.forEach(armor => {
     rulesArr.push(
       body(`armor${armor._id}`)
         .optional({checkFalsy: true}).trim().escape()
-        .isInt().withMessage('All quantities must be whole numbers')
+        .isInt().withMessage('All quantities must be positive whole numbers')
     );
   });
 
@@ -198,7 +199,8 @@ const validationRules = () => {
 const processFormData = async (req, res, next) => {
   // convert inventory form data to arrays of object ids
   const {weaponsArr, armorArr} = convertFormDataToInventoryArrays(req.body);
-  
+  const { allArmor, allWeapons } = await getFormData();
+
   // make the shop
   const shop = new Shop({
     name: body.name,
@@ -218,7 +220,7 @@ const processFormData = async (req, res, next) => {
       'shopForm',
       {
         title: 'Create shop',
-        item: blankShop,
+        item: shop,
         allWeapons,
         allArmor,
         weaponsStock,
@@ -226,6 +228,10 @@ const processFormData = async (req, res, next) => {
         errors: errors.array(),
       }
     );
+  } else {
+    // no errors, save it
+    await shop.save();
+    res.redirect(shop.url);
   }
 }
 
