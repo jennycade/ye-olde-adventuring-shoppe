@@ -215,35 +215,6 @@ const convertInventoryFieldsToArray = (req, res, next) => {
   next();
 };
 
-const getValidationRules = async () => {
-  const { allArmor, allWeapons} = await getFormData();
-
-  const rulesArr = [
-    body('name')
-      .optional({checkFalsy: true}).trim().escape()
-      .isLength({ max: 100 }).withMessage('Name must be less than 100 characters'),
-    body('description')
-      .optional({checkFalsy: true}).trim().escape(),
-  ];
-
-  allWeapons.forEach(weapon => {
-    rulesArr.push(
-      body(`weapon${weapon._id}`)
-        .optional({checkFalsy: true}).trim().escape()
-        .isInt().withMessage('All quantities must be positive whole numbers')
-    );
-  });
-  allArmor.forEach(armor => {
-    rulesArr.push(
-      body(`armor${armor._id}`)
-        .optional({checkFalsy: true}).trim().escape()
-        .isInt().withMessage('All quantities must be positive whole numbers')
-    );
-  });
-
-  return rulesArr;
-};
-
 const validationRules = () => {
   return [
     body('name')
@@ -267,8 +238,8 @@ const processFormData = async (req, res, next) => {
 
   // make the shop
   const shop = new Shop({
-    name: body.name,
-    description: body.description,
+    name: req.body.name,
+    description: req.body.description,
     weaponsInStock: weaponsArr,
     armorInStock: armorArr,
   });
