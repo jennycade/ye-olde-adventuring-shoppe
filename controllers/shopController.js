@@ -10,11 +10,17 @@ exports.shopList = async (req, res, next) => {
     const shops = await Shop.find()
       .sort({name: 1})
       .exec();
+    const items = shops.map((s) => {
+      return {
+        name: s.name || `Shop ${s._id}`,
+        url: s.url,
+      }
+    })
     res.render(
       'list',
       {
         title: 'All shops',
-        items: shops,
+        items,
       }
     );
   } catch (err) {
