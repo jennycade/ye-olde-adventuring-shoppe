@@ -28,8 +28,6 @@ exports.shopList = async (req, res, next) => {
   }
 };
 
-
-
 exports.shopDetail = async (req, res, next) => {
   try {
     const shop = await Shop.findById(req.params.id)
@@ -58,7 +56,7 @@ exports.shopDetail = async (req, res, next) => {
   }
 };
 
-const getFormData = async () => {
+const getAllInventoryItems = async () => {
   const allWeapons = await Weapon.find({}, 'name url')
     .sort({name: 1})
     .exec();
@@ -172,10 +170,27 @@ const convertFormDataToInventoryArrays = (reqBody) => {
   return { weaponsArr, armorArr };
 };
 
+const convertInventoryFieldsToArray = (req, res, next) => {
+  const invFields = ['armor', 'weapon'];
+
+  invFields.forEach((prefix) => {
+    const obj = {};
+    Object.keys(req.body).forEach((fieldID) => {
+      if (fieldID.search(prefix) === 0) {
+        // want
+        // body.weapons = {id1: inputval1, ...}
+        obj[fieldID] = req.body[fieldID];
+      }
+    });
+    req.body[prefix] = obj;
+  });
+  next();
+};
+
 exports.createGet = async (req, res, next) => {
   // get the form data
   try {
-    const { allArmor, allWeapons } = await getFormData();
+    const { allArmor, allWeapons } = await getAllInventoryItems();
 
     const blankShop = new Shop({
       name: '',
@@ -204,23 +219,6 @@ exports.createGet = async (req, res, next) => {
   }
 };
 
-const convertInventoryFieldsToArray = (req, res, next) => {
-  const invFields = ['armor', 'weapon'];
-
-  invFields.forEach((prefix) => {
-    const obj = {};
-    Object.keys(req.body).forEach((fieldID) => {
-      if (fieldID.search(prefix) === 0) {
-        // want
-        // body.weapons = {id1: inputval1, ...}
-        obj[fieldID] = req.body[fieldID];
-      }
-    });
-    req.body[prefix] = obj;
-  });
-  next();
-};
-
 const validationRules = () => {
   return [
     body('name')
@@ -240,7 +238,7 @@ const validationRules = () => {
 const processFormData = async (req, res, next) => {
   // convert inventory form data to arrays of object ids
   const {weaponsArr, armorArr} = convertFormDataToInventoryArrays(req.body);
-  const { allArmor, allWeapons } = await getFormData();
+  const { allArmor, allWeapons } = await getAllInventoryItems();
 
   // make the shop
   const shop = new Shop({
