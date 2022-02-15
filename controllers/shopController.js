@@ -83,8 +83,10 @@ const convertInventoryArrayToObj = (arr, allInventoryItems) => {
   // }
   const inventoryObj = {};
   allInventoryItems.forEach((item) => {
+    console.log(`Counting item ${item._id}`);
     // count occurrences
-    const n = arr.filter(x => x === item._id).length;
+    const n = arr.filter(x => x.toString() === item._id.toString()).length;
+    console.log(n);
     inventoryObj[item._id] = n;
   });
 
@@ -289,10 +291,37 @@ exports.formPost = [
 
 // get form to update
 exports.updateGet = async(req, res, next) => {
-  res.render(
-    'layout',
-    { title: 'Update'}
+  // get the shop
+  const shop = await Shop.findById(req.params.id);
+  if (shop === null) {
+    const err = new Error('Shop not found');
+    err.status = 404;
+    return next(err);
+  }
+
+  // build the inventory
+  const { allArmor, allWeapons } = await getAllInventoryItems();
+  const weaponsStock = convertInventoryArrayToObj(
+    shop.weaponsInStock.toString().split(','),
+    allWeapons
   );
+  const armorStock = convertInventoryArrayToObj(
+    shop.armorInStock.toString().split(','),
+    allArmor
+  );
+
+  // render
+  res.render(
+    'shopForm',
+    {
+      title: 'Update shop',
+      item: shop,
+      allWeapons,
+      allArmor,
+      weaponsStock,
+      armorStock,
+    }
+  )
 };
 
 // get form to delete
