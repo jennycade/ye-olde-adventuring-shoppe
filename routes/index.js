@@ -37,6 +37,8 @@ router.get('/shops/create', shopController.createGet);
 router.post('/shops/create', shopController.formPost);
 router.get('/shops/:id', shopController.shopDetail);
 router.get('/shops/:id/update', shopController.updateGet);
+router.post('/shops/:id/update', shopController.formPost);
 router.get('/shops/:id/delete', shopController.deleteGet);
+router.post('/shops/:id/delete', shopController.deletePost);
 
 module.exports = router;

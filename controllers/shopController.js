@@ -236,6 +236,8 @@ const validationRules = () => {
 }
 
 const processFormData = async (req, res, next) => {
+  // track form type: create or update?
+  let formType = 'Create';
   // convert inventory form data to arrays of object ids
   const {weaponsArr, armorArr} = convertFormDataToInventoryArrays(req.body);
   const { allArmor, allWeapons } = await getAllInventoryItems();
@@ -248,6 +250,12 @@ const processFormData = async (req, res, next) => {
     armorInStock: armorArr,
   });
 
+  // update?
+  if (req.params.id) {
+    formType = 'Update';
+    shop._id = req.params.id;
+  }
+
   // form data errors?
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -258,7 +266,7 @@ const processFormData = async (req, res, next) => {
     res.render(
       'shopForm',
       {
-        title: 'Create shop',
+        title: `${formType} shop`,
         item: shop,
         allWeapons,
         allArmor,
@@ -270,8 +278,16 @@ const processFormData = async (req, res, next) => {
   } else {
     // no errors, save it
     try {
-      await shop.save();
-      res.redirect(shop.url);
+      if (formType === 'Create') {
+        await shop.save();
+        res.redirect(shop.url);
+      } else if (formType === 'Update') {
+        await Shop.findByIdAndUpdate(
+          req.params.id,
+          shop,
+        );
+        res.redirect(shop.url);
+      }
     } catch (err) {
       return next(err);
     }
@@ -324,6 +340,12 @@ exports.updateGet = async(req, res, next) => {
 
 // get form to delete
 exports.deleteGet = async(req, res, next) => {
+  res.render(
+    'layout',
+    { title: 'Delete'}
+  );
+};
+exports.deletePost = async(req, res, next) => {
   res.render(
     'layout',
     { title: 'Delete'}
