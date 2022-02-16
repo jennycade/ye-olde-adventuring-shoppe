@@ -4,7 +4,7 @@ block content
   h1= title 
 
   form(method='POST' action='')
-    p.mb-3 Are you sure you want to delete #{item.name}?
+    p.mb-3 Are you sure you want to delete #{item.displayName || item.name}?
 
     input#id.form-control(
       type='hidden'
