@@ -7,9 +7,7 @@ const armorController = require('../controllers/armorController');
 const shopController = require('../controllers/shopController');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Welcome to Ye Olde Adventuring Shoppe' });
-});
+router.get('/', shopController.homePage);
 
 // weapons
 router.get('/weapons/', weaponController.weaponList);

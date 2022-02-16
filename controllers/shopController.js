@@ -4,6 +4,31 @@ const Weapon = require('../models/weapon');
 
 const { body, validationResult } = require('express-validator');
 
+// home page - ask for shop code
+exports.homePage = async (req, res, next) => {
+  let error = null;
+  if (req.query.shopId) {
+    // try to find the shop
+    try {
+      const shop = await Shop.findOne({_id: req.query.shopId});
+      if (shop === null) {
+        // not found
+        throw new Error('ObjectId');
+      } else {
+        res.redirect(`/shops/${shop._id}`);
+      }
+    } catch (err) {
+      if (err.kind='ObjectId' || err.message === 'ObjectId') {
+        error = `Can't find shop with code ${req.query.shopId}.`;
+        res.render('index', { title: 'Welcome to Ye Olde Adventuring Shoppe', error });
+      } else {
+        return next(err);
+      }
+    }
+  }
+  res.render('index', { title: 'Welcome to Ye Olde Adventuring Shoppe' });
+}
+
 // list all shops - TODO: for DMs only!
 exports.shopList = async (req, res, next) => {
   try {

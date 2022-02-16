@@ -2,4 +2,11 @@ extends layout
 
 block content
   h1= title
+
+  if error 
+    p.alert.alert-danger(role='alert')= error
   
+  form(method='GET' action='')
+    include mixins/formElements
+    +optionalTextField('shopId', 'Enter shop code', '')
+    +submitButton()
