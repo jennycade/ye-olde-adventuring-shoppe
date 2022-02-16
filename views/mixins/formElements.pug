@@ -90,6 +90,25 @@ mixin submitButton()
       type='submit'
     )
 
+mixin cancelButton()
+  .mb-3 
+    a.btn.btn-outline-secondary(
+      href='./'
+      role='button'
+    ) Cancel
+
+mixin submitAndCancelButtons()
+  .mb-3 
+    input.btn.btn-primary(
+      type='submit'
+    )
+    | 
+    a.btn.btn-outline-secondary(
+      href='./'
+      role='button'
+    ) Cancel
+    
+
 mixin inventoryRowField(fieldName, labelText, currentVal)
   .row.mb-3
     .col-sm-2

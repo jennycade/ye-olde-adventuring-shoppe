@@ -1,19 +1,6 @@
-extends layout 
+extends form 
 
-block content 
-  include mixins/formElements
-
-  h1= title 
-
-  if errors 
-    .alert.alert-danger(role='alert')
-      p Correct the following errors: 
-      ul 
-        for error in errors 
-          li= error.msg
-
-  form(method='POST' action='')
-    p.mb-3 Fields marked with * are required
+block formFields 
 
     +optionalTextField('name', 'Name', item.name)
     +optionalTextArea('description', 'Description', item.description)
@@ -30,4 +17,3 @@ block content
       each armor in allArmor
         +inventoryRowField(`armor.${armor._id}`, armor.name, armorStock[armor._id])
 
-    +submitButton()

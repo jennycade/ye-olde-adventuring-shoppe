@@ -1,52 +1,38 @@
-extend layout 
+extend form
 
-block content 
-  include mixins/formElements
-  h1= title 
+block formFields
 
-  if errors 
-    .alert.alert-danger(role='alert')
-      p Correct the following errors: 
-      ul 
-        for error in errors 
-          li= error.msg
+  +requiredTextField('name', 'Name', weapon.name)
+  +requiredNumberField('costGp', 'Cost (gp)', weapon.costGp)
+  +requiredSelectField('class', 'Weapon class', weaponDefinitions.classes, weapon.class)
+  +requiredSelectField('distance', 'Distance', weaponDefinitions.distances, weapon.distance)
+  +optionalTextField('rangeFt', 'Range (for ranged/thrown weapons only)', weapon.rangeFt)
+  +requiredTextFieldWithPattern(
+    'damageDice',
+    'Damage dice (format: #d#)',
+    "^\\d+d\\d+$",
+    weapon.damageDice,
+    placeholder='e.g. 1d8 or 2d10'
+  )
+  +requiredSelectField(
+    'damageType',
+    'Damage type',
+    weaponDefinitions.damageTypes,
+    weapon.damageType,
+  )
+  +requiredNumberField('weightLb', 'Weight (lb)', weapon.weightLb)
 
-  form(method='POST' action='')
-    p.mb-3 Fields marked with * are required
+  fieldset.mb-3
+    legend Weapon Properties 
+    each prop in weapon.properties
+      div.form-check
+        input.form-check-input(
+          name='properties'
+          id=prop._id
+          type='checkbox'
+          checked=prop.checked
+          value=prop._id
+        )
+        label.form-check-label(for=prop._id) #{prop.name}
 
-    +requiredTextField('name', 'Name', weapon.name)
-    +requiredNumberField('costGp', 'Cost (gp)', weapon.costGp)
-    +requiredSelectField('class', 'Weapon class', weaponDefinitions.classes, weapon.class)
-    +requiredSelectField('distance', 'Distance', weaponDefinitions.distances, weapon.distance)
-    +optionalTextField('rangeFt', 'Range (for ranged/thrown weapons only)', weapon.rangeFt)
-    +requiredTextFieldWithPattern(
-      'damageDice',
-      'Damage dice (format: #d#)',
-      "^\\d+d\\d+$",
-      weapon.damageDice,
-      placeholder='e.g. 1d8 or 2d10'
-    )
-    +requiredSelectField(
-      'damageType',
-      'Damage type',
-      weaponDefinitions.damageTypes,
-      weapon.damageType,
-    )
-    +requiredNumberField('weightLb', 'Weight (lb)', weapon.weightLb)
-
-    fieldset.mb-3
-      legend Weapon Properties 
-      each prop in weapon.properties
-        div.form-check
-          input.form-check-input(
-            name='properties'
-            id=prop._id
-            type='checkbox'
-            checked=prop.checked
-            value=prop._id
-          )
-          label.form-check-label(for=prop._id) #{prop.name}
-
-    +optionalTextArea('special', 'Special rules', weapon.special)
-    
-    +submitButton()
+  +optionalTextArea('special', 'Special rules', weapon.special)
