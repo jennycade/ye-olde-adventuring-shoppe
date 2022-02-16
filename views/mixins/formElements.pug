@@ -61,6 +61,17 @@ mixin requiredNumberField(fieldName, labelText, currentVal)
       id=fieldName
       name=fieldName
       type='number'
+      step=0.01
+      value!=currentVal
+      required=true
+    )
+mixin requiredIntegerField(fieldName, labelText, currentVal)
+  .mb-3
+    label.form-label(for=fieldName) #{labelText} *
+    input.form-control(
+      id=fieldName
+      name=fieldName
+      type='number'
       value!=currentVal
       required=true
     )
