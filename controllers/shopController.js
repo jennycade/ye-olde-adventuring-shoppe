@@ -342,7 +342,7 @@ exports.updateGet = async(req, res, next) => {
 exports.deleteGet = async (req, res, next) => {
   try {
     // find the shop to delete
-    const shop = await Shop.findById(req.params.id, 'name');
+    const shop = await Shop.findById(req.params.id, 'name displayName');
     if (shop === null) {
       const err = new Error('Shop not found');
       err.status = 404;

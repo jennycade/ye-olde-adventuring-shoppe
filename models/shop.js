@@ -29,4 +29,9 @@ ShopSchema.virtual('numItems').get(function() {
   return this.weaponsInStock.length + this.armorInStock.length;
 });
 
+// display name (if name is blank)
+ShopSchema.virtual('displayName').get(function() {
+  return this.name || `Shop ${this._id}`;
+});
+
 module.exports = mongoose.model('Shop', ShopSchema);

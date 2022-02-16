@@ -1,8 +1,9 @@
-const async = require('async');
+
 const { body, validationResult } = require('express-validator');
 
 const Weapon = require('../models/weapon');
 const WeaponProperty = require('../models/weaponProperty');
+const Shop = require('../models/shop');
 
 // list all
 exports.weaponList = async (req, res, next) => {
@@ -236,6 +237,15 @@ exports.updatePost = [
   processWeaponFormData,
 ];
 
+// helper - check for shops with weapon before allowing delete
+const findShopsWithItem = async (weaponId) => {
+  const shopsWithItem = await Shop.find(
+    { weaponsInStock: weaponId },
+    'name url displayName'
+  ).exec();
+  return shopsWithItem;
+}
+
 // get form to delete
 exports.deleteGet = async(req, res, next) => {
   try {
@@ -248,13 +258,25 @@ exports.deleteGet = async(req, res, next) => {
       return next(err);
     }
 
-    res.render(
-      'deleteForm',
-      {
-        title: 'Confirm delete',
-        item: weapon
-      }
-    );
+    // check for occurrences in shops
+    const shopsWithItem = await findShopsWithItem(weapon._id);
+    if (shopsWithItem.length > 0) {
+      res.render(
+        'deleteError',
+        {
+          displayName: weapon.name,
+          shops: shopsWithItem,
+        }
+      )
+    } else {
+      res.render(
+        'deleteForm',
+        {
+          title: 'Confirm delete',
+          item: weapon
+        }
+      );
+    }
   } catch (err) {
     return next(err);
   }
@@ -263,6 +285,12 @@ exports.deleteGet = async(req, res, next) => {
 // delete!
 exports.deletePost = async (req, res, next) => {
   try {
+    // check for occurrence in shops
+    const shopsWithItem = await findShopsWithItem(req.body.id);
+    if (shopsWithItem.length > 0) {
+      throw new Error (`Cannot delete an item that's listed in a shop's inventory`);
+    }
+
     // get the weapon to delete
     const weapon = await Weapon.findByIdAndRemove(req.body.id);
 

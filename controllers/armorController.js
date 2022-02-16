@@ -1,5 +1,9 @@
 const Armor = require('../models/armor');
+const Shop = require('../models/shop');
 const armorDefinitions = require('../models/armorDefinitions');
+
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 const { body, validationResult } = require('express-validator');
 
@@ -183,25 +187,45 @@ exports.updatePost = [
   processArmorFormData,
 ];
 
+const findShopsWithItem = async (armorId) => {
+  const shopsWithItem = await Shop.find(
+    { armorInStock: armorId },
+    'name url displayName'
+  ).exec();
+  return shopsWithItem;
+}
+
 // get form to delete
 exports.deleteGet = async (req, res, next) => {
   try {
     // find the armor to delete
-    const armor = await Armor.findById(req.params.id, 'name');
+    const armor = await Armor.findById(req.params.id, 'name displayName size');
     if (armor === null) {
       const err = new Error('Armor not found');
       err.status = 404;
       return next(err);
     }
 
-    // delete form
-    res.render(
-      'deleteForm',
-      {
-        title: 'Confirm delete',
-        item: armor
-      }
-    );
+    // check for occurrence in shops
+    const shopsWithItem = await findShopsWithItem(armor._id);
+    if (shopsWithItem.length > 0) {
+      res.render(
+        'deleteError',
+        {
+          displayName: armor.displayName,
+          shops: shopsWithItem,
+        }
+      )
+    } else {
+      // delete form
+      res.render(
+        'deleteForm',
+        {
+          title: 'Confirm delete',
+          item: armor
+        }
+      );
+    }
   } catch (err) {
     return next(err);
   }
@@ -209,6 +233,14 @@ exports.deleteGet = async (req, res, next) => {
 
 exports.deletePost = async (req, res, next) => {
   try {
+    // check for occurrence in shops
+    const shopsWithItem = await findShopsWithItem(req.body.id);
+
+    if (shopsWithItem.length > 0) {
+      throw new Error (`Cannot delete an item that's listed in a shop's inventory`);
+    }
+
+    
     // find and delete
     const armor = await Armor.findByIdAndRemove(req.body.id);
     
