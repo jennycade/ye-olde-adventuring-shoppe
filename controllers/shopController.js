@@ -339,15 +339,43 @@ exports.updateGet = async(req, res, next) => {
 };
 
 // get form to delete
-exports.deleteGet = async(req, res, next) => {
-  res.render(
-    'layout',
-    { title: 'Delete'}
-  );
+exports.deleteGet = async (req, res, next) => {
+  try {
+    // find the shop to delete
+    const shop = await Shop.findById(req.params.id, 'name');
+    if (shop === null) {
+      const err = new Error('Shop not found');
+      err.status = 404;
+      return next(err);
+    }
+
+    // delete form
+    res.render(
+      'deleteForm',
+      {
+        title: 'Confirm delete',
+        item: shop
+      }
+    );
+  } catch (err) {
+    return next(err);
+  }
 };
-exports.deletePost = async(req, res, next) => {
-  res.render(
-    'layout',
-    { title: 'Delete'}
-  );
+
+exports.deletePost = async (req, res, next) => {
+  try {
+    // find and delete
+    const shop = await Shop.findByIdAndRemove(req.body.id);
+    
+    if (shop === null) {
+      const err = new Error('Shop not found');
+      err.status = 404;
+      return next(err);
+    }
+
+    // redirect to armor
+    res.redirect('/shops');
+  } catch (err) {
+    return next(err);
+  }
 };
