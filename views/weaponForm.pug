@@ -1,6 +1,7 @@
 extend layout 
 
 block content 
+  include mixins/formElements
   h1= title 
 
   if errors 
@@ -12,111 +13,26 @@ block content
 
   form(method='POST' action='')
     p.mb-3 Fields marked with * are required
-    .mb-3
-      label.form-label(for='name') Name *
-      input.form-control(
-        id='name'
-        name='name'
-        type='text'
-        value=weapon.name
-        required=true
-        maxlength=100
-      )
 
-    .mb-3
-      label.form-label(for='costGp') Cost (gp) *
-      input.form-control(
-        id='costGp'
-        name='costGp'
-        type='number'
-        required=true
-        value=weapon.costGp
-      )
-
-    .mb-3
-      label.form-label(for='class') Weapon class *
-      select.form-select(
-        id='class'
-        name='class'
-        required
-      )
-        option(
-          value=''
-          disabled
-          selected=(weapon.class === undefined)
-        )
-        for selectOption in weaponDefinitions.classes
-          option(
-            value=selectOption
-            selected=(weapon.class === selectOption)
-          ) #{selectOption}
-    
-    .mb-3
-      label.form-label(for='distance') Distance *
-      select.form-select(
-        id='distance'
-        name='distance'
-        required
-      )
-        option(
-          value=''
-          disabled
-          selected=(weapon.distance === undefined)
-        )
-        for selectOption in weaponDefinitions.distances 
-          option(
-            value=selectOption
-            selected=(weapon.distance === selectOption)
-          ) #{selectOption}
-    
-    .mb-3
-      label.form-label(for='rangeFt') Range (for ranged/thrown weapons only)
-      input.form-control(
-        id='rangeFt'
-        name='rangeFt'
-        type='text'
-        value=weapon.rangeFt
-      )
-    
-    .mb-3
-      label.form-label(for='damageDice') Damage Dice (format: #d#) *
-      input.form-control(
-        id='damageDice'
-        name='damageDice'
-        type='text'
-        pattern="^\\d+d\\d+$"
-        placeholder='e.g. 1d8 or 2d10'
-        value=weapon.damageDice
-        required
-      )
-    
-    .mb-3
-      label.form-label(for='damageType') Damage type *
-      select.form-select(
-        id='damageType'
-        name='damageType'
-        required
-      )
-        option(
-          value=''
-          disabled
-          selected=(weapon.damageType === undefined)
-        )
-        for selectOption in weaponDefinitions.damageTypes 
-          option(
-            value=selectOption
-            selected=(weapon.damageType === selectOption)
-          ) #{selectOption}
-    
-    .mb-3
-      label.form-label(for=weightLb) Weight (lb) *
-      input.form-control(
-        id='weightLb'
-        name='weightLb'
-        type='number'
-        required
-        value=weapon.weightLb
-      )
+    +requiredTextField('name', 'Name', weapon.name)
+    +requiredNumberField('costGp', 'Cost (gp)', weapon.costGp)
+    +requiredSelectField('class', 'Weapon class', weaponDefinitions.classes, weapon.class)
+    +requiredSelectField('distance', 'Distance', weaponDefinitions.distances, weapon.distance)
+    +optionalTextField('rangeFt', 'Range (for ranged/thrown weapons only)', weapon.rangeFt)
+    +requiredTextFieldWithPattern(
+      'damageDice',
+      'Damage dice (format: #d#)',
+      "^\\d+d\\d+$",
+      weapon.damageDice,
+      placeholder='e.g. 1d8 or 2d10'
+    )
+    +requiredSelectField(
+      'damageType',
+      'Damage type',
+      weaponDefinitions.damageTypes,
+      weapon.damageType,
+    )
+    +requiredNumberField('weightLb', 'Weight (lb)', weapon.weightLb)
 
     fieldset.mb-3
       legend Weapon Properties 
@@ -131,14 +47,6 @@ block content
           )
           label.form-check-label(for=prop._id) #{prop.name}
 
-    .mb-3
-      label.form-label(for='special') Special rules 
-      textarea.form-control(
-        id='special'
-        name='special'
-      ) #{weapon.special}
+    +optionalTextArea('special', 'Special rules', weapon.special)
     
-    .mb-3
-      input.btn.btn-primary(
-        type='submit'
-      )
+    +submitButton()
