@@ -7,8 +7,6 @@ const adminController = require('./adminController');
 
 const { body, validationResult } = require('express-validator');
 
-const dotenv = require('dotenv').config();
-
 // home page - ask for shop code
 exports.homePage = async (req, res, next) => {
   let error = null;
@@ -47,8 +45,7 @@ exports.homePage = async (req, res, next) => {
       }
     }
   }
-  // res.render('index', { title: 'Welcome to Ye Olde Adventuring Shoppe' });
-  res.render('index', { title: `Password: ${process.env.ADMINPASSWORD}` });
+  res.render('index', { title: 'Welcome to Ye Olde Adventuring Shoppe' });
 }
 
 // list all shops - TODO: for DMs only!
