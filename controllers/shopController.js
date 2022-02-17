@@ -294,7 +294,8 @@ const processFormData = async (req, res, next) => {
   if (req.body.customCode && (req.body.customCode !== '')) {
     const shopsWithCode = await Shop.find({customCode: req.body.customCode});
     shopsWithCode.forEach(s => {
-      if (s._id !== req.params.id) {
+      const id = s._id.toString();
+      if (id !== req.params.id) {
         // another shop already exists with the same code. Add an error.
         customCodeNotUniqueError = `Another shop already has the code ${req.body.customCode}. Choose another code.`;
       }
