@@ -3,6 +3,7 @@ const Armor = require('../models/armor');
 const Weapon = require('../models/weapon');
 
 const objectIdController = require('./objectIdController');
+const adminController = require('./adminController');
 
 const { body, validationResult } = require('express-validator');
 
@@ -263,8 +264,6 @@ exports.createGet = async (req, res, next) => {
 };
 
 const validationRules = () => {
-  const dotenv = require('dotenv').config();
-  const PW = process.env.ADMINPASSWORD;
   return [
     body('name')
       .optional({checkFalsy: true}).trim().escape()
@@ -280,8 +279,6 @@ const validationRules = () => {
     body('armor.*')
       .optional({checkFalsy: true}).trim().escape()
       .isInt({min: 0}).withMessage('All quantities must be whole numbers'),
-    body('password', 'Incorrect admin password')
-      .escape().trim().equals(PW),
   ]
 }
 
@@ -367,6 +364,7 @@ exports.formPost = [
   // handle dynamic inventory fields
   convertInventoryFieldsToArray,
   // validate
+  adminController.verifyAdminPasswordRule(),
   validationRules(),
   // process
   processFormData,
@@ -431,20 +429,50 @@ exports.deleteGet = async (req, res, next) => {
   }
 };
 
-exports.deletePost = async (req, res, next) => {
-  try {
-    // find and delete
-    const shop = await Shop.findByIdAndRemove(req.body.id);
+exports.deletePost = [
+  adminController.verifyAdminPasswordRule(),
+  async (req, res, next) => {
+    // validation?
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      // redisplay the form
+      try {
+        // find the shop to delete
+        const shop = await Shop.findById(req.body.id, 'name displayName');
+        if (shop === null) {
+          const err = new Error('Shop not found');
+          err.status = 404;
+          return next(err);
+        }
     
-    if (shop === null) {
-      const err = new Error('Shop not found');
-      err.status = 404;
-      return next(err);
+        // delete form
+        res.render(
+          'deleteForm',
+          {
+            title: 'Confirm delete',
+            item: shop,
+            errors: errors.array(),
+          }
+        );
+      } catch (err) {
+        return next(err);
+      }
+    } else {
+      try {
+        // find and delete
+        const shop = await Shop.findByIdAndRemove(req.body.id);
+        
+        if (shop === null) {
+          const err = new Error('Shop not found');
+          err.status = 404;
+          return next(err);
+        }
+  
+        // redirect to armor
+        res.redirect('/shops');
+      } catch (err) {
+        return next(err);
+      }
     }
-
-    // redirect to armor
-    res.redirect('/shops');
-  } catch (err) {
-    return next(err);
   }
-};
+];

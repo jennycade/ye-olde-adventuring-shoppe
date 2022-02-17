@@ -3,7 +3,7 @@ extends layout
 block content 
   include mixins/formElements
 
-  h1= title 
+  h1!= title 
 
   if errors 
     .alert.alert-danger(role='alert')
