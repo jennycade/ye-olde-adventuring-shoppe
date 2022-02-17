@@ -6,6 +6,7 @@ const WeaponProperty = require('../models/weaponProperty');
 const Shop = require('../models/shop');
 
 const adminController = require('./adminController');
+const objectIdController = require('./objectIdController');
 
 // list all
 exports.weaponList = async (req, res, next) => {
@@ -29,6 +30,12 @@ exports.weaponList = async (req, res, next) => {
 // get one
 exports.weaponDetail = async (req, res, next) => {
   try {
+    // valid objectId?
+    if (!objectIdController.isValidObjectId(req.params.id)) {
+      const err = new Error(`Shop not found`);
+      err.status = 404;
+      throw err;
+    }
     const weapon = await Weapon.findById(req.params.id)
       .populate('properties')
       .exec();

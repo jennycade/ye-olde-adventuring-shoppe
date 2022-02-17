@@ -74,6 +74,12 @@ exports.shopList = async (req, res, next) => {
 
 exports.shopDetail = async (req, res, next) => {
   try {
+    // valid objectId?
+    if (!objectIdController.isValidObjectId(req.params.id)) {
+      const err = new Error(`Shop not found`);
+      err.status = 404;
+      throw err;
+    }
     const shop = await Shop.findById(req.params.id)
       .populate('weaponsInStock armorInStock')
       .exec();

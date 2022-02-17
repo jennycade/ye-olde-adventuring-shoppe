@@ -2,6 +2,7 @@ const Armor = require('../models/armor');
 const Shop = require('../models/shop');
 const armorDefinitions = require('../models/armorDefinitions');
 const adminController = require('./adminController');
+const objectIdController = require('./objectIdController');
 
 const { body, validationResult } = require('express-validator');
 
@@ -35,6 +36,12 @@ exports.armorList = async (req, res, next) => {
 // get one
 exports.armorDetail = async (req, res, next) => {
   try {
+    // valid objectId?
+    if (!objectIdController.isValidObjectId(req.params.id)) {
+      const err = new Error(`Shop not found`);
+      err.status = 404;
+      throw err;
+    }
     const armor = await Armor.findById(req.params.id).exec();
     // not found?
     if (armor === null) {
