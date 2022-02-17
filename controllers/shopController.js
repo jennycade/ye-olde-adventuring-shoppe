@@ -2,25 +2,43 @@ const Shop = require('../models/shop');
 const Armor = require('../models/armor');
 const Weapon = require('../models/weapon');
 
+const objectIdController = require('./objectIdController');
+
 const { body, validationResult } = require('express-validator');
 
 // home page - ask for shop code
 exports.homePage = async (req, res, next) => {
   let error = null;
   if (req.query.shopId) {
+    const queryStr = req.query.shopId;
     // try to find the shop
     try {
-      const shop = await Shop.findOne({_id: req.query.shopId});
-      if (shop === null) {
+      let shop;
+      if (objectIdController.isValidObjectId(queryStr)) {
+        shop = await Shop.findById(queryStr).exec();
+      }
+      if (!shop) {
         // not found
-        throw new Error('ObjectId');
+        shop = await Shop.findOne({ customCode: queryStr }).exec();
+        // still not found
+        if (shop === null) {
+          throw new Error('Shop not found');
+        } else {
+          res.redirect(`/shops/${shop._id}`);
+        }
       } else {
         res.redirect(`/shops/${shop._id}`);
       }
     } catch (err) {
-      if (err.kind='ObjectId' || err.message === 'ObjectId') {
-        error = `Can't find shop with code ${req.query.shopId}.`;
-        res.render('index', { title: 'Welcome to Ye Olde Adventuring Shoppe', error });
+      if (err.message='Shop not found') {
+        error = `Can't find shop with code ${queryStr}.`;
+        res.render(
+          'index',
+          {
+            title: 'Welcome to Ye Olde Adventuring Shoppe',
+            error
+          }
+        );
       } else {
         return next(err);
       }
