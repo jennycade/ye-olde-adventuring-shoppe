@@ -3,6 +3,7 @@ extends form
 block formFields 
 
     +optionalTextField('name', 'Name', item.name)
+    +optionalTextField('customCode', 'Shop code', item.customCode)
     +optionalTextArea('description', 'Description', item.description)
     
     fieldset.mb-3

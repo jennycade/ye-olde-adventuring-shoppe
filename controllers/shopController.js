@@ -249,6 +249,9 @@ const validationRules = () => {
     body('name')
       .optional({checkFalsy: true}).trim().escape()
       .isLength({ max: 100 }).withMessage('Name must be less than 100 characters'),
+    body('customCode')
+      .optional({checkFalsy: true}).trim().escape()
+      .isLength({ max: 100 }).withMessage('Shop code must be less than 100 characters'),
     body('description')
       .optional({checkFalsy: true}).trim().escape(),
     body('weapon.*')
@@ -264,12 +267,25 @@ const processFormData = async (req, res, next) => {
   // track form type: create or update?
   let formType = 'Create';
   // convert inventory form data to arrays of object ids
-  const {weaponsArr, armorArr} = convertFormDataToInventoryArrays(req.body);
+  const { weaponsArr, armorArr } = convertFormDataToInventoryArrays(req.body);
   const { allArmor, allWeapons } = await getAllInventoryItems();
+
+  // check for customCode uniqueness
+  let customCodeNotUniqueError = null;
+  if (req.body.customCode && (req.body.customCode !== '')) {
+    const shopsWithCode = await Shop.find({customCode: req.body.customCode});
+    shopsWithCode.forEach(s => {
+      if (s._id !== req.params.id) {
+        // another shop already exists with the same code. Add an error.
+        customCodeNotUniqueError = `Another shop already has the code ${req.body.customCode}. Choose another code.`;
+      }
+    });
+  }
 
   // make the shop
   const shop = new Shop({
     name: req.body.name,
+    customCode: req.body.customCode,
     description: req.body.description,
     weaponsInStock: weaponsArr,
     armorInStock: armorArr,
@@ -283,10 +299,16 @@ const processFormData = async (req, res, next) => {
 
   // form data errors?
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
+  if ((!errors.isEmpty()) || customCodeNotUniqueError) {
     // re-render the form
     const weaponsStock = convertInventoryArrayToObj(weaponsArr, allWeapons);
     const armorStock = convertInventoryArrayToObj(armorArr, allArmor);
+
+    // add customCodeNotUniqueError to errors array?
+    const errorsArr = errors.array();
+    if (customCodeNotUniqueError) {
+      errorsArr.push({msg: customCodeNotUniqueError});
+    }
 
     res.render(
       'shopForm',
@@ -297,7 +319,7 @@ const processFormData = async (req, res, next) => {
         allArmor,
         weaponsStock,
         armorStock,
-        errors: errors.array(),
+        errors: errorsArr,
       }
     );
   } else {

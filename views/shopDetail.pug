@@ -1,24 +1,27 @@
 extends layout 
 
 block content 
-  h1= title 
+  h1!= title 
 
   if item.image 
     img(src=item.image)
   
   dl 
+    dt Shop code 
+    dd !{item.customCode}
+
     dt Description 
-    dd #{item.description}
+    dd !{item.description}
 
     dt Weapons in stock 
     each weapon in weaponsInStock 
-      dd #{weapon.qty} x 
-        a(href=weapon.url) #{weapon.name}
+      dd !{weapon.qty} x 
+        a(href=weapon.url) !{weapon.name}
 
     dt Armor in stock 
     each item in armorInStock 
-      dd #{item.qty} x 
-        a(href=item.url) #{item.displayName}
+      dd !{item.qty} x 
+        a(href=item.url) !{item.displayName}
 
 
   

@@ -17,6 +17,7 @@ const ShopSchema = new Schema({
   }],
   description: String,
   image: String,
+  customCode: String,
 });
 
 // url
