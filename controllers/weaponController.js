@@ -5,6 +5,8 @@ const Weapon = require('../models/weapon');
 const WeaponProperty = require('../models/weaponProperty');
 const Shop = require('../models/shop');
 
+const adminController = require('./adminController');
+
 // list all
 exports.weaponList = async (req, res, next) => {
   try {
@@ -233,6 +235,7 @@ const processWeaponFormData = async (req, res, next) => {
 // process update form
 exports.updatePost = [
   convertPropertiesToArray,
+  adminController.verifyAdminPasswordRule(),
   validationRules(),
   processWeaponFormData,
 ];
@@ -283,29 +286,46 @@ exports.deleteGet = async(req, res, next) => {
 };
 
 // delete!
-exports.deletePost = async (req, res, next) => {
-  try {
-    // check for occurrence in shops
-    const shopsWithItem = await findShopsWithItem(req.body.id);
-    if (shopsWithItem.length > 0) {
-      throw new Error (`Cannot delete an item that's listed in a shop's inventory`);
-    }
+exports.deletePost = [
+  adminController.verifyAdminPasswordRule(),
+  async (req, res, next) => {
+    try {
+      // check for occurrence in shops
+      const shopsWithItem = await findShopsWithItem(req.body.id);
+      if (shopsWithItem.length > 0) {
+        throw new Error (`Cannot delete an item that's listed in a shop's inventory`);
+      }
 
-    // get the weapon to delete
-    const weapon = await Weapon.findByIdAndRemove(req.body.id);
+      // check admin password
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        // re-render the form
+        const weapon = await Weapon.findById(req.body.id);
+        res.render(
+          'deleteForm',
+          {
+            title: 'Confirm delete',
+            item: weapon,
+            errors: errors.array(),
+          }
+        );
+      } else {
+        // get the weapon and delete
+        const weapon = await Weapon.findByIdAndRemove(req.body.id);
 
-    if (weapon === null) {
-      const err = new Error('Weapon not found');
-      err.status = 404
+        if (weapon === null) {
+          const err = new Error('Weapon not found');
+          err.status = 404
+          return next(err);
+        }
+
+        res.redirect('/weapons');
+      }
+    } catch (err) {
       return next(err);
     }
-
-    res.redirect('/weapons');
-    
-  } catch (err) {
-    return next(err);
   }
-}
+];
 
 exports.createGet = async (req, res, next) => {
   // blank form!
