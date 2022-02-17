@@ -73,6 +73,7 @@ exports.shopList = async (req, res, next) => {
 };
 
 exports.shopDetail = async (req, res, next) => {
+  console.log('Trying to get shops');
   try {
     // valid objectId?
     if (!objectIdController.isValidObjectId(req.params.id)) {
