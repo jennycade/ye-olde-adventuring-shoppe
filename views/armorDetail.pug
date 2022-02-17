@@ -2,26 +2,26 @@ extend itemDetail
 
 block itemDetails 
   dt Armor Type 
-  dd #{item.armorType}
+  dd !{item.armorType}
 
   dt Size 
-  dd #{item.size}
+  dd !{item.size}
 
   dt Armor Class 
-  dd #{item.armorClass}
+  dd !{item.armorClass}
 
   dt Minimum Strength
-  dd #{item.minStrength}
+  dd !{item.minStrength}
 
   dt Gives disadvanage on stealth checks?
-  dd #{item.stealthDisadvantage}
+  dd !{item.stealthDisadvantage}
 
   dt Donning and doffing time
   if item.donningTime === item.doffingTime
-    dd #{item.donningTime}
+    dd !{item.donningTime}
   else
-    dd Donning time: #{item.donningTime}
-    dd Doffing time: #{item.doffingTime}
+    dd Donning time: !{item.donningTime}
+    dd Doffing time: !{item.doffingTime}
 
   dt Description
-  dd #{item.description}
+  dd !{item.description}

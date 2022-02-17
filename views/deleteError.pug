@@ -1,7 +1,7 @@
 extends layout 
 
 block content 
-  h1= `Cannot delete ${displayName}`
+  h1!= `Cannot delete ${displayName}`
 
   .alert.alert-danger(role='alert')
     p Remove the item from each store's inventory first.
@@ -9,7 +9,7 @@ block content
   ul 
     for shop in shops 
       li 
-        a(href=shop.url)= shop.displayName
+        a(href=shop.url)!= shop.displayName
   
   include mixins/formElements
   +cancelButton()

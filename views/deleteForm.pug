@@ -9,7 +9,7 @@ block content
       p Correct the following errors: 
       ul 
         for error in errors 
-          li= error.msg
+          li!= error.msg
 
   form(method='POST' action='')
     p.mb-3 Are you sure you want to delete !{item.displayName || item.name}?

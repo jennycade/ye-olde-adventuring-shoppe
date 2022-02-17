@@ -3,41 +3,41 @@ extends itemDetail
 block itemDetails 
 
     dt Weapon type 
-    dd #{item.category}
+    dd !{item.category}
 
     dt Damage roll
-    dd #{item.damageDice} #{item.damageType}
+    dd !{item.damageDice} !{item.damageType}
     .container-fluid.px-0
       .row
         .col-sm-4
           .card
             .card-header Minimum damage
             .card-body
-              p.card-text #{item.minDamage}
+              p.card-text !{item.minDamage}
         .col-sm-4
           .card
             .card-header Mean damage
             .card-body
-              p.card-text #{item.meanDamage}
+              p.card-text !{item.meanDamage}
         .col-sm-4
           .card
             .card-header Maximum damage
             .card-body
-              p.card-text #{item.maxDamage}
+              p.card-text !{item.maxDamage}
 
     dt Properties 
     dd 
       dl
         each property in item.properties 
-          dt #{property.name}
-          dd #{property.description}
+          dt !{property.name}
+          dd !{property.description}
         else 
           dt No properties
     
     if item.rangeFt 
       dt Range 
-      dd #{item.rangeFt} feet
+      dd !{item.rangeFt} feet
 
     if item.special 
       dt Special rules 
-      dd #{item.special}
+      dd !{item.special}

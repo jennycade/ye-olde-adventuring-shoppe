@@ -33,6 +33,6 @@ block formFields
           checked=prop.checked
           value=prop._id
         )
-        label.form-check-label(for=prop._id) #{prop.name}
+        label.form-check-label(for=prop._id) !{prop.name}
 
   +optionalTextArea('special', 'Special rules', weapon.special)

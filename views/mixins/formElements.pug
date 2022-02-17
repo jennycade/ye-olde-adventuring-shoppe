@@ -1,6 +1,6 @@
 mixin requiredSelectField(fieldName, labelText, allOptions, currentVal)
   .mb-3
-    label.form-label(for=fieldName) #{labelText} *
+    label.form-label(for=fieldName) !{labelText} *
     select.form-select(
       id=fieldName
       name=fieldName
@@ -15,11 +15,11 @@ mixin requiredSelectField(fieldName, labelText, allOptions, currentVal)
         option(
           value!=selectOption
           selected=(currentVal === selectOption)
-        ) #{selectOption}
+        ) !{selectOption}
 
 mixin requiredTextField(fieldName, labelText, currentVal, placeholder='')
   .mb-3
-    label.form-label(for=fieldName) #{labelText} *
+    label.form-label(for=fieldName) !{labelText} *
     input.form-control(
       id=fieldName
       name=fieldName
@@ -32,7 +32,7 @@ mixin requiredTextField(fieldName, labelText, currentVal, placeholder='')
 
 mixin requiredTextFieldWithPattern(fieldName, labelText, pattern, currentVal, placeholder=null)
   .mb-3
-    label.form-label(for=fieldName) #{labelText} *
+    label.form-label(for=fieldName) !{labelText} *
     input.form-control(
       id=fieldName
       name=fieldName
@@ -45,7 +45,7 @@ mixin requiredTextFieldWithPattern(fieldName, labelText, pattern, currentVal, pl
 
 mixin optionalTextField(fieldName, labelText, currentVal)
   .mb-3
-    label.form-label(for=fieldName) #{labelText}
+    label.form-label(for=fieldName) !{labelText}
     input.form-control(
       id=fieldName
       name=fieldName
@@ -56,7 +56,7 @@ mixin optionalTextField(fieldName, labelText, currentVal)
 
 mixin requiredNumberField(fieldName, labelText, currentVal)
   .mb-3
-    label.form-label(for=fieldName) #{labelText} *
+    label.form-label(for=fieldName) !{labelText} *
     input.form-control(
       id=fieldName
       name=fieldName
@@ -67,7 +67,7 @@ mixin requiredNumberField(fieldName, labelText, currentVal)
     )
 mixin requiredIntegerField(fieldName, labelText, currentVal)
   .mb-3
-    label.form-label(for=fieldName) #{labelText} *
+    label.form-label(for=fieldName) !{labelText} *
     input.form-control(
       id=fieldName
       name=fieldName
@@ -78,7 +78,7 @@ mixin requiredIntegerField(fieldName, labelText, currentVal)
 
 mixin optionalTextArea(fieldName, labelText, currentVal)
   .mb-3
-    label.form-label(for=fieldName) #{labelText} 
+    label.form-label(for=fieldName) !{labelText} 
     textarea.form-control(
       id=fieldName
       name=fieldName
@@ -131,5 +131,5 @@ mixin inventoryRowField(fieldName, labelText, currentVal)
         value!=currentVal
       )
     .col-sm-10
-      label.form-label(for=fieldName) #{labelText}
+      label.form-label(for=fieldName) !{labelText}
     
