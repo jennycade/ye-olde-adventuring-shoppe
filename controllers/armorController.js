@@ -1,9 +1,7 @@
 const Armor = require('../models/armor');
 const Shop = require('../models/shop');
 const armorDefinitions = require('../models/armorDefinitions');
-
-const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
+const adminController = require('./adminController');
 
 const { body, validationResult } = require('express-validator');
 
@@ -183,6 +181,7 @@ const processArmorFormData = async (req, res, next) => {
 }
 
 exports.updatePost = [
+  adminController.verifyAdminPasswordRule(),
   validationRules(),
   processArmorFormData,
 ];
@@ -231,31 +230,48 @@ exports.deleteGet = async (req, res, next) => {
   }
 };
 
-exports.deletePost = async (req, res, next) => {
-  try {
-    // check for occurrence in shops
-    const shopsWithItem = await findShopsWithItem(req.body.id);
+exports.deletePost = [
+  adminController.verifyAdminPasswordRule(),
+  async (req, res, next) => {
+    try {
+      // check for occurrence in shops
+      const shopsWithItem = await findShopsWithItem(req.body.id);
 
-    if (shopsWithItem.length > 0) {
-      throw new Error (`Cannot delete an item that's listed in a shop's inventory`);
-    }
+      if (shopsWithItem.length > 0) {
+        throw new Error (`Cannot delete an item that's listed in a shop's inventory`);
+      }
 
-    
-    // find and delete
-    const armor = await Armor.findByIdAndRemove(req.body.id);
-    
-    if (armor === null) {
-      const err = new Error('Armor not found');
-      err.status = 404;
+      // check for password problem
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const armor = await Armor.findById(req.body.id);
+        // redisplay the form
+        res.render(
+          'deleteForm',
+          {
+            title: 'Confirm delete',
+            item: armor,
+            errors: errors.array(),
+          }
+        );
+      } else {
+        // find and delete
+        const armor = await Armor.findByIdAndRemove(req.body.id);
+        
+        if (armor === null) {
+          const err = new Error('Armor not found');
+          err.status = 404;
+          return next(err);
+        }
+
+        // redirect to armor
+        res.redirect('/armor');
+      }
+    } catch (err) {
       return next(err);
     }
-
-    // redirect to armor
-    res.redirect('/armor');
-  } catch (err) {
-    return next(err);
   }
-};
+];
 
 exports.createGet = async (req, res, next) => {
   // blank armor
