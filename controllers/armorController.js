@@ -165,17 +165,19 @@ const processArmorFormData = async (req, res, next) => {
     );
     return;
   } else {
-    if (isUpdate) {
-      await Armor.findByIdAndUpdate(
-        req.params.id,
-        armor,
-      );
-      res.redirect(armor.url);
-    } else {
-      await armor.save((err) => {
-        if (err) { return next(err); }
-      });
-      res.redirect(armor.url);
+    try {
+      if (isUpdate) {
+        await Armor.findByIdAndUpdate(
+          req.params.id,
+          armor,
+        );
+        res.redirect(armor.url);
+      } else {
+        await armor.save();
+        res.redirect(armor.url);
+      }
+    } catch (err) {
+      return next(err);
     }
   }
 }

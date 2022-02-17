@@ -217,17 +217,19 @@ const processWeaponFormData = async (req, res, next) => {
     return;
   } else {
     // valid, save and redirect
-    if (isUpdate) {
-      await Weapon.findByIdAndUpdate(
-        req.params.id,
-        weapon,
-      );
-      res.redirect(weapon.url);
-    } else {
-      await weapon.save((err) => {
-        if (err) { return next(err); }
-      });
-      res.redirect(weapon.url);
+    try {
+      if (isUpdate) {
+        await Weapon.findByIdAndUpdate(
+          req.params.id,
+          weapon,
+        );
+        res.redirect(weapon.url);
+      } else {
+        await weapon.save();
+        res.redirect(weapon.url);
+      }
+    } catch (err) {
+      return next(err);
     }
   }
 }
