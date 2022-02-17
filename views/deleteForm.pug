@@ -13,6 +13,9 @@ block content
       value=item._id
     )
 
+    include mixins/formElements.pug
+    +passwordField()
+
     .mb-3 
       input.btn.btn-danger(
         type='submit'

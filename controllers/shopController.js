@@ -263,6 +263,8 @@ exports.createGet = async (req, res, next) => {
 };
 
 const validationRules = () => {
+  const dotenv = require('dotenv').config();
+  const PW = process.env.ADMINPASSWORD;
   return [
     body('name')
       .optional({checkFalsy: true}).trim().escape()
@@ -278,6 +280,8 @@ const validationRules = () => {
     body('armor.*')
       .optional({checkFalsy: true}).trim().escape()
       .isInt({min: 0}).withMessage('All quantities must be whole numbers'),
+    body('password', 'Incorrect admin password')
+      .escape().trim().equals(PW),
   ]
 }
 

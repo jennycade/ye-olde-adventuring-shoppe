@@ -84,6 +84,18 @@ mixin optionalTextArea(fieldName, labelText, currentVal)
       name=fieldName
     ) !{currentVal}
 
+mixin passwordField()
+  .mb-3 
+    label.form-label(for='password') Admin password *
+    input.form-control(
+      id='password'
+      name='password'
+      type='password'
+      placeholder='Admin password is required to save any changes'
+      required=true
+      value=''
+    )
+
 mixin submitButton()
   .mb-3
     input.btn.btn-primary(
